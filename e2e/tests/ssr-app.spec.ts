@@ -1,5 +1,7 @@
 /**
- * @zeste/svelte in a real SvelteKit app (SSR, adapter-node), in Chromium.
+ * The same app built with each binding, in Chromium: @zeste/svelte in SvelteKit (adapter-node) and
+ * without a framework (Vite), @zeste/react in Next.js (App Router) and without a framework (Vite, React 18).
+ * Projects without a server (`metadata.ssr: false`) skip the server-rendering and routing tests.
  * Third parties are intercepted (empty responses) to observe requests without depending on the network.
  */
 import { expect, test, type Page } from '@playwright/test';
@@ -23,9 +25,22 @@ async function interceptThirdParties(page: Page) {
   return requests;
 }
 
+/**
+ * Opens the page and waits for the engine to start: with React, the buttons and their attributes
+ * are already in the server HTML, but clicks only work once hydrated.
+ */
+async function open(page: Page, path = '/') {
+  await page.goto(path);
+  await page.waitForFunction(() => window.__zesteManifest?.length);
+}
+
+const ssrOnly = () => test.skip(!test.info().project.metadata.ssr, 'no server rendering in this app');
+
 const youtubeIframe = (page: Page, testId: string) => page.locator(`[data-testid="${testId}"] iframe`);
 
 test.describe('server rendering', () => {
+  test.beforeEach(ssrOnly);
+
   test('without a cookie: banner and placeholder are already in the HTML', async ({ request }) => {
     const html = await (await request.get('/')).text();
     expect(html).toContain('data-testid="banner"');
@@ -41,9 +56,9 @@ test.describe('server rendering', () => {
   });
 });
 
-test('visitor already decided: the banner never appears, not even for a frame', async ({ page, context }) => {
+test('visitor already decided: the banner never appears, not even for a frame', async ({ page, context, baseURL }) => {
   await interceptThirdParties(page);
-  await context.addCookies([{ name: 'tarteaucitron', value: ALL_GRANTED, url: 'http://localhost:4318' }]);
+  await context.addCookies([{ name: 'tarteaucitron', value: ALL_GRANTED, url: baseURL! }]);
   await page.addInitScript(() => {
     window.__bannerSeen = false;
     new MutationObserver(() => {
@@ -57,7 +72,7 @@ test('visitor already decided: the banner never appears, not even for a frame', 
 
 test('before any choice: no third-party request', async ({ page }) => {
   const requests = await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await expect(page.getByTestId('banner')).toBeVisible();
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(500);
@@ -66,7 +81,7 @@ test('before any choice: no third-party request', async ({ page }) => {
 
 test('"Tout accepter": video rendered, GA4 loaded, choice saved', async ({ page, context }) => {
   const requests = await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Tout accepter' }).click();
 
   await expect(page.getByTestId('banner')).toBeHidden();
@@ -78,7 +93,7 @@ test('"Tout accepter": video rendered, GA4 loaded, choice saved', async ({ page,
 
 test('custom placeholder: "Voir la vidéo" only accepts YouTube', async ({ page }) => {
   const requests = await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Voir la vidéo' }).click();
 
   await expect(youtubeIframe(page, 'video-1')).toBeVisible();
@@ -89,7 +104,7 @@ test('custom placeholder: "Voir la vidéo" only accepts YouTube', async ({ page 
 
 test('default placeholder: tarteaucitron texts, in the chosen language', async ({ page }) => {
   await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Afficher une 2ᵉ vidéo' }).click();
   const placeholder = page.getByTestId('video-2');
   await expect(placeholder).toContainText('YouTube est désactivé.');
@@ -99,7 +114,7 @@ test('default placeholder: tarteaucitron texts, in the chosen language', async (
 
 test('preferences: nothing pre-checked, service-by-service choices, remembered', async ({ page }) => {
   const requests = await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Personnaliser' }).click();
 
   const dialog = page.getByRole('dialog', { name: 'Panneau de gestion des cookies' });
@@ -123,7 +138,7 @@ test('preferences: nothing pre-checked, service-by-service choices, remembered',
 
 test('Escape closes the preferences without saving anything', async ({ page }) => {
   await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Personnaliser' }).click();
   const dialog = page.getByRole('dialog', { name: 'Panneau de gestion des cookies' });
   await dialog.getByRole('checkbox', { name: /YouTube/ }).check();
@@ -135,7 +150,7 @@ test('Escape closes the preferences without saving anything', async ({ page }) =
 
 test('mounting a 2nd video does not reload the 1st', async ({ page }) => {
   await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Tout accepter' }).click();
   await expect(youtubeIframe(page, 'video-1')).toBeVisible();
   await youtubeIframe(page, 'video-1').evaluate((el) => (el.dataset.marker = 'original'));
@@ -146,8 +161,9 @@ test('mounting a 2nd video does not reload the 1st', async ({ page }) => {
 });
 
 test('client-side navigation to another page: the video is rendered there, without a reload', async ({ page }) => {
+  ssrOnly();
   await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Tout accepter' }).click();
   await page.evaluate(() => (window.__sameDocument = true));
 
@@ -159,7 +175,7 @@ test('client-side navigation to another page: the video is rendered there, witho
 
 test('withdrawal: the video becomes a placeholder again, GA4 asks for a reload', async ({ page }) => {
   await interceptThirdParties(page);
-  await page.goto('/');
+  await open(page);
   await page.getByRole('button', { name: 'Tout accepter' }).click();
   await expect(youtubeIframe(page, 'video-1')).toBeVisible();
 

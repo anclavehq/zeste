@@ -1,4 +1,4 @@
-import type { ConsentManager } from '@zeste/core';
+import type { ConsentManager, ZesteManifest } from '@zeste/core';
 
 // What the harnesses expose to the Playwright tests, and the globals set by third-party tags.
 declare global {
@@ -7,6 +7,8 @@ declare global {
     __catalog?: { consent: ConsentManager; errors: string[]; probe: () => string };
     /** `client.html` harness */
     __zeste?: { consent: ConsentManager };
+    /** Set by `start()`: the app is hydrated and the engine is running. */
+    __zesteManifest?: ZesteManifest[];
     __bannerSeen?: boolean;
     __sameDocument?: boolean;
     dataLayer?: unknown[];

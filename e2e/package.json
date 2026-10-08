@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build harness --outDir ../dist --emptyOutDir && pnpm --filter example-sveltekit --filter example-skin-bits --filter example-skin-ark --filter example-skin-shadcn --filter example-existing-site build",
+    "build": "vite build harness --outDir ../dist --emptyOutDir && pnpm --filter example-sveltekit --filter example-nextjs --filter example-svelte-spa --filter example-react-spa --filter example-skin-bits --filter example-skin-ark --filter example-skin-shadcn --filter example-existing-site build",
     "test": "pnpm build && playwright test",
     "typecheck": "tsc --noEmit -p ."
   },
