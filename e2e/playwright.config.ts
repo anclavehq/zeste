@@ -19,6 +19,8 @@ export default defineConfig({
         ['nextjs', 4323, true],
         ['svelte-spa', 4324, false],
         ['react-spa', 4325, false],
+        ['nuxt', 4329, true],
+        ['vue-spa', 4330, false],
       ] as const
     ).map(([name, port, ssr]) => ({
       name,
@@ -103,9 +105,17 @@ export default defineConfig({
       url: `http://localhost:${port}/`,
       reuseExistingServer: true,
     })),
+    {
+      // example app built by `pnpm build` (nuxt build)
+      command: 'node ../examples/nuxt/.output/server/index.mjs',
+      env: { PORT: '4329' },
+      url: 'http://localhost:4329/',
+      reuseExistingServer: true,
+    },
     ...[
       ['svelte-spa', '4324'],
       ['react-spa', '4325'],
+      ['vue-spa', '4330'],
     ].map(([app, port]) => ({
       command: `pnpm --dir ../examples/${app} exec vite preview --port ${port} --strictPort`,
       url: `http://localhost:${port}/`,

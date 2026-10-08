@@ -1,6 +1,6 @@
 /**
- * The same app built with each binding, in Chromium: @zeste/svelte in SvelteKit (adapter-node) and
- * without a framework (Vite), @zeste/react in Next.js (App Router) and without a framework (Vite, React 18).
+ * The same app built with each binding, in Chromium: @zeste/svelte in SvelteKit (adapter-node),
+ * @zeste/react in Next.js (App Router), @zeste/vue in Nuxt, and each one without a framework (Vite; React 18).
  * Projects without a server (`metadata.ssr: false`) skip the server-rendering and routing tests.
  * Third parties are intercepted (empty responses) to observe requests without depending on the network.
  */
