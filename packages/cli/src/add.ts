@@ -10,6 +10,7 @@ export const STYLES = ['zeste', 'pelure'] as const;
 export type Style = (typeof STYLES)[number];
 
 const TEMPLATES = join(dirname(fileURLToPath(import.meta.url)), '..', 'templates');
+const OWN = join(TEMPLATES, 'svelte');
 const FILES = ['CookieBanner.svelte', 'CookiePreferences.svelte', 'CookiePlaceholder.svelte', 'index.ts'];
 /** Skin colors: only without shadcn (shadcn follows the project theme). */
 const THEME = 'theme.css';
@@ -92,8 +93,8 @@ export function add(options: AddOptions): AddResult {
   const skipped: string[] = [];
   const files = ui === 'shadcn' ? FILES : [...FILES, THEME];
   for (const file of files) {
-    // Most specific first: style + lib, then style-wide, then shared by all styles.
-    const source = [join(TEMPLATES, style, ui, file), join(TEMPLATES, style, 'common', file), join(TEMPLATES, style, file), join(TEMPLATES, file)].find(
+    // Most specific first: style + lib, then style-wide, then shared by every framework, then by all styles.
+    const source = [join(OWN, style, ui, file), join(OWN, style, 'common', file), join(TEMPLATES, style, file), join(OWN, file)].find(
       (p) => existsSync(p),
     );
     if (!source) throw new Error(`Template not found: ${style}/${ui}/${file}`);
