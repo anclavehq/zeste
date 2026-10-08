@@ -15,7 +15,9 @@
 		services: services(),
 		initial: data.consent,
 		plugins: [googleConsentMode()],
-		messages
+		messages,
+		// compliance guard: active in dev by default; forced here for the demo and the e2e tests.
+		guard: true
 	});
 </script>
 

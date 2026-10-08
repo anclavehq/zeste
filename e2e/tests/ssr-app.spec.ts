@@ -25,6 +25,15 @@ async function interceptThirdParties(page: Page) {
   return requests;
 }
 
+/** Compliance guard warnings emitted by the page. */
+function complianceWarnings(page: Page) {
+  const warnings: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'warning' && message.text().startsWith('[zeste/consent]')) warnings.push(message.text());
+  });
+  return warnings;
+}
+
 /**
  * Opens the page and waits for the engine to start: with React, the buttons and their attributes
  * are already in the server HTML, but clicks only work once hydrated.
@@ -188,4 +197,53 @@ test('withdrawal: the video becomes a placeholder again, GA4 asks for a reload',
   await expect(page.getByTestId('video-1-placeholder')).toBeVisible();
   await expect(youtubeIframe(page, 'video-1')).toHaveCount(0);
   await expect(page.getByRole('status')).toContainText('après rechargement');
+});
+
+test.describe('compliance guard', () => {
+  test('no warning on the app as written, before and after the choice', async ({ page }) => {
+    await interceptThirdParties(page);
+    const warnings = complianceWarnings(page);
+    await open(page);
+    await expect(page.getByTestId('banner')).toBeVisible();
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Tout refuser' }).click();
+    await page.waitForTimeout(1500); // the "permanent link" check runs 1 s after the choice
+    expect(warnings).toEqual([]);
+  });
+
+  test('shrunken "Tout refuser" → warning', async ({ page }) => {
+    await interceptThirdParties(page);
+    const warnings = complianceWarnings(page);
+    await page.addInitScript(() => {
+      document.addEventListener('DOMContentLoaded', () => {
+        const style = document.createElement('style');
+        style.textContent = '[data-zeste-action="denyAll"] { font-size: 9px !important; padding: 0 !important; }';
+        document.head.append(style);
+      });
+    });
+    await open(page);
+    await expect.poll(() => warnings.join('\n')).toContain('much smaller than "Accept all"');
+  });
+
+  test('banner without "Tout refuser" → warning', async ({ page }) => {
+    await interceptThirdParties(page);
+    const warnings = complianceWarnings(page);
+    // Removed from the server HTML or before the first render, as a careless developer would.
+    await page.addInitScript(() => {
+      new MutationObserver(() => {
+        document.querySelector('[data-testid="banner"] [data-zeste-action="denyAll"]')?.remove();
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await page.goto('/');
+    await expect.poll(() => warnings.join('\n')).toContain('no "Deny all" button');
+  });
+
+  test('no way left to reopen the preferences → warning', async ({ page }) => {
+    await interceptThirdParties(page);
+    const warnings = complianceWarnings(page);
+    await open(page);
+    await page.getByRole('navigation').getByRole('button', { name: 'Gestion des services' }).evaluate((el) => el.remove());
+    await page.getByRole('button', { name: 'Tout refuser' }).click();
+    await expect.poll(() => warnings.join('\n'), { timeout: 5000 }).toContain('reopen the preferences');
+  });
 });
