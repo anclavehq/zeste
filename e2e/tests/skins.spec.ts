@@ -66,7 +66,7 @@ test('server rendering: the banner is in the HTML', async ({ request }) => {
 test('theme: the dark class is set from the server render and the skin adapts to it', async ({ page, request }, testInfo) => {
   const { theme, adaptsToDark } = testInfo.project.metadata as { theme: 'light' | 'dark'; adaptsToDark: boolean };
   const html = await (await request.get('/')).text();
-  expect(html.includes('<html lang="fr" class="dark">')).toBe(theme === 'dark');
+  expect(/<html[^>]*\sclass="dark"/.test(html)).toBe(theme === 'dark');
 
   await open(page);
   await expect(banner(page)).toBeVisible();
