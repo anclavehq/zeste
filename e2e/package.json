@@ -1,0 +1,21 @@
+{
+  "name": "e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build harness --outDir ../dist --emptyOutDir && pnpm --filter example-sveltekit --filter example-skin-bits --filter example-skin-ark --filter example-skin-shadcn --filter example-existing-site build",
+    "test": "pnpm build && playwright test",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@zeste/core": "workspace:*",
+    "@zeste/services": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.0.0",
+    "@axe-core/playwright": "^4.13.0"
+  }
+}

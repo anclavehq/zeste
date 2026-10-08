@@ -1,0 +1,5 @@
+{
+  "extends": "../core/tsconfig.json",
+  "compilerOptions": { "types": ["node"] },
+  "include": ["src", "test"]
+}

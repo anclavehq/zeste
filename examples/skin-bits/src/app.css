@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+/* Demo: `dark:` follows the .dark class (like shadcn), set by hooks.server.ts */
+@custom-variant dark (&:is(.dark *));
+
+html.dark body {
+	background: #0c0a09;
+	color-scheme: dark;
+}

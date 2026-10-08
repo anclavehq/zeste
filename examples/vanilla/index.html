@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>zeste — exemple vanilla</title>
+  </head>
+  <body>
+    <h1>zeste, sans framework</h1>
+
+    <!-- Banner: your own HTML, no imposed style -->
+    <div id="banner" hidden>
+      <p>On utilise des cookies pour la mesure d'audience et les vidéos.</p>
+      <button id="deny">Tout refuser</button>
+      <button id="accept">Tout accepter</button>
+    </div>
+
+    <!-- Standard tarteaucitron markup: works as is -->
+    <div class="youtube_player" data-videoID="dQw4w9WgXcQ" data-width="560" data-height="315"></div>
+
+    <pre id="state"></pre>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

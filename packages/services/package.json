@@ -1,0 +1,30 @@
+{
+  "name": "@zeste/services",
+  "version": "0.0.0",
+  "description": "tarteaucitron.js service catalog, split into one lazily-loaded module per service",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/services/*.ts",
+    "./i18n/*": "./src/i18n/*.ts"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@zeste/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "acorn": "^8.15.0",
+    "acorn-walk": "^8.3.0",
+    "happy-dom": "^20.0.0",
+    "tarteaucitronjs": "1.35.1",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  }
+}

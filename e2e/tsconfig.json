@@ -1,0 +1,5 @@
+{
+  "extends": "../packages/core/tsconfig.json",
+  "compilerOptions": { "resolveJsonModule": true, "types": ["node", "vite/client"] },
+  "include": ["harness", "tests", "playwright.config.ts"]
+}

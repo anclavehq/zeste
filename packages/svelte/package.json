@@ -1,0 +1,31 @@
+{
+  "name": "@zeste/svelte",
+  "version": "0.0.0",
+  "description": "Svelte 5 bindings for zeste: reactive consent state, headless components, SSR-ready",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "svelte": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+  },
+  "dependencies": {
+    "@zeste/core": "workspace:*",
+    "esm-env": "^1.2.0"
+  },
+  "peerDependencies": {
+    "svelte": "^5.40.0"
+  },
+  "devDependencies": {
+    "svelte": "^5.57.0",
+    "svelte-check": "^4.6.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,34 @@
+{
+	"name": "example-playground",
+	"private": true,
+	"type": "module",
+	"description": "Standalone interactive demo (single HTML file): real zeste code, 3 UI libraries x 2 styles",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build && node scripts/inline.ts",
+		"typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+	},
+	"dependencies": {
+		"@ark-ui/svelte": "^5.24.0",
+		"@internationalized/date": "^3.12.0",
+		"@lucide/svelte": "^1.52.0",
+		"@zeste/core": "workspace:*",
+		"@zeste/services": "workspace:*",
+		"@zeste/svelte": "workspace:*",
+		"bits-ui": "^2.18.0",
+		"cn": "^0.4.0",
+		"shadcn-svelte": "^1.7.0",
+		"tailwind-variants": "^3.3.1",
+		"tw-animate-css": "^1.4.0"
+	},
+	"devDependencies": {
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@tailwindcss/vite": "^4.3.0",
+		"@types/node": "^24",
+		"svelte": "^5.57.1",
+		"svelte-check": "^4.6.0",
+		"tailwindcss": "^4.3.0",
+		"typescript": "^6.0.3",
+		"vite": "^8.3.0"
+	}
+}

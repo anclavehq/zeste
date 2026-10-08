@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>zeste — vidéo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=block">
+<style>
+  :root {
+    --paper: #fffdf4; --ink: #18301f; --soft: #4d5f4f; --line: #e7e3cf; --accent: #f5d742; --night: #0f1a12; --red: #e5484d;
+    --display: "Bricolage Grotesque", system-ui, sans-serif; --body: "Instrument Sans", system-ui, sans-serif; --mono: "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); color: var(--ink); font-family: var(--body); }
+  .scene { position: absolute; inset: 0; opacity: 0; will-change: opacity, transform; }
+  .abs { position: absolute; will-change: transform, opacity; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; font: 600 26px/1 var(--body); padding: 12px 20px; border-radius: 999px; background: var(--ink); color: var(--paper); white-space: nowrap; }
+  .chip.accent { background: var(--accent); color: var(--ink); }
+  .frame { border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 40px 100px rgb(24 48 31 / 0.22), 0 0 0 1px rgb(24 48 31 / 0.08); }
+  .frame .bar { height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 18px; background: #f6f4ea; border-bottom: 1px solid var(--line); }
+  .frame .bar i { width: 13px; height: 13px; border-radius: 50%; background: #dcd8c4; }
+  .frame .bar span { margin-left: 14px; font: 500 17px var(--mono); color: var(--soft); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px 16px; }
+  .frame img, .frame video { display: block; width: 100%; height: auto; }
+
+  /* Captions */
+  #caption { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); width: max-content; max-width: 1640px; text-align: center; font: 600 30px/1.3 var(--body); color: var(--paper); background: rgb(24 48 31 / 0.92); padding: 12px 26px; border-radius: 16px; opacity: 0; z-index: 50; }
+
+  /* "zeste" wipe between some scenes */
+  #wipe { position: absolute; top: -10%; bottom: -10%; left: 0; width: 130%; background: var(--accent); z-index: 40; transform: translateX(-120%) skewX(-12deg); }
+  #wipe::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 120px; background: var(--ink); }
+
+  /* --- Hook --- */
+  .hook-frame { left: 320px; top: 34px; width: 1280px; transform-origin: 62% 100%; }
+  .hook-wrap { position: relative; }
+  .hook-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .hook-label { font: 700 30px var(--body); fill: var(--red); }
+
+  /* --- Catalog --- */
+  .catalogue { background: var(--ink); color: var(--paper); }
+  .marquee { position: absolute; left: 0; display: flex; gap: 18px; white-space: nowrap; }
+  .marquee span { font: 600 28px var(--body); padding: 12px 22px; border-radius: 999px; border: 2px solid rgb(255 253 244 / 0.22); color: rgb(255 253 244 / 0.55); }
+  .count { left: 0; right: 0; top: 280px; text-align: center; font: 800 330px/1 var(--display); color: var(--accent); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+  .count-label { left: 0; right: 0; top: 620px; text-align: center; font: 700 56px var(--display); }
+  .lock { left: 50%; top: 720px; }
+
+  /* --- Idea --- */
+  .sun { left: 1180px; top: -220px; width: 1000px; height: 1000px; opacity: 0.22; }
+  .logo-big { left: 330px; top: 270px; width: 300px; height: 300px; }
+  .word { left: 680px; top: 255px; font: 800 250px/1 var(--display); letter-spacing: -0.05em; display: flex; }
+  .word span { display: inline-block; }
+  .tagline { left: 335px; top: 640px; font: 700 76px/1.15 var(--display); letter-spacing: -0.02em; }
+  .tagline mark { background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 88% / 0% 38%; color: inherit; padding: 0 6px; }
+
+  /* --- Command --- */
+  .term { left: 310px; top: 150px; width: 1300px; border-radius: 22px; background: #10140f; color: #e9ecdf; box-shadow: 0 40px 100px rgb(0 0 0 / 0.3); overflow: hidden; transform-origin: 50% 0; }
+  .term .tbar { height: 50px; display: flex; gap: 10px; align-items: center; padding: 0 20px; background: #1a2019; }
+  .term .tbar i { width: 14px; height: 14px; border-radius: 50%; background: #3a4436; }
+  .term pre { padding: 28px 36px 34px; font: 500 31px/1.6 var(--mono); white-space: pre; min-height: 320px; }
+  .term .prompt { color: var(--accent); }
+  .term .ok { color: #9fd39a; }
+  .term .dim { color: #8f9a85; }
+  .caret { display: inline-block; width: 18px; height: 36px; background: var(--accent); vertical-align: -6px; }
+  .card { top: 500px; width: 520px; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 30px 80px rgb(24 48 31 / 0.2); }
+  .card .shot { height: 300px; background-size: 1280px auto; background-position: 0 -520px; background-repeat: no-repeat; }
+  .card .name { font: 700 34px var(--display); padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .card .name small { font: 500 20px var(--mono); color: var(--soft); }
+  .own { left: 0; right: 0; top: 965px; text-align: center; font: 700 40px var(--display); }
+
+  /* --- Styles --- */
+  .tile { width: 690px; border-radius: 18px; overflow: hidden; box-shadow: 0 24px 60px rgb(24 48 31 / 0.18); background: #fff; }
+  .tile img { display: block; width: 100%; }
+  .tile .chip { position: absolute; left: 18px; top: 18px; font-size: 22px; padding: 10px 16px; }
+  .tokens { left: 610px; top: 300px; width: 700px; border-radius: 24px; background: #10140f; color: #e9ecdf; padding: 34px 40px; box-shadow: 0 40px 120px rgb(0 0 0 / 0.4); font: 500 34px/1.8 var(--mono); }
+  .tokens .sw { display: inline-block; width: 30px; height: 30px; border-radius: 8px; vertical-align: -5px; margin-right: 16px; box-shadow: 0 0 0 2px rgb(255 255 255 / 0.25); }
+
+  /* --- Your components --- */
+  .code { left: 80px; top: 230px; width: 820px; border-radius: 22px; background: #10140f; color: #e9ecdf; box-shadow: 0 40px 100px rgb(0 0 0 / 0.3); overflow: hidden; }
+  .code-title { font: 500 20px var(--mono); color: #8f9a85; padding: 16px 28px; background: #1a2019; }
+  .code pre { padding: 26px 30px 30px; font: 500 23px/1.75 var(--mono); white-space: pre-wrap; }
+  .code .line { display: block; }
+  .code .del { color: #e7a3a3; }
+  .code .add { color: #9fd39a; }
+  .code mark { color: inherit; background: linear-gradient(rgb(245 215 66 / 0.35), rgb(245 215 66 / 0.35)) no-repeat 0 0 / 0% 100%; border-radius: 6px; padding: 0 4px; }
+  .site { left: 960px; top: 150px; width: 900px; }
+  .site .layers { position: relative; }
+  .site .layers img + img { position: absolute; inset: 0; }
+  .ds-chip { left: 80px; top: 130px; }
+
+  /* --- Journey --- */
+  .demo-frame { left: 340px; top: 34px; width: 1240px; }
+  .badge { left: 300px; top: 18px; }
+
+  /* --- Compliance --- */
+  .zero { left: 140px; top: 120px; font: 800 340px/1 var(--display); letter-spacing: -0.05em; }
+  .zero-label { left: 150px; top: 470px; width: 760px; font: 700 52px/1.15 var(--display); }
+  .net { left: 150px; top: 640px; width: 760px; display: grid; gap: 14px; }
+  .net div { display: flex; justify-content: space-between; gap: 20px; font: 500 24px var(--mono); padding: 14px 20px; border-radius: 14px; background: #f3f1e4; border: 1px solid var(--line); }
+  .net b { color: var(--soft); font: 600 22px var(--body); }
+  .guard-frame { left: 980px; top: 160px; width: 820px; }
+  .console { left: 960px; top: 720px; width: 860px; background: #1f231b; color: #f3d27a; border-radius: 18px; padding: 22px 26px; font: 500 25px/1.5 var(--mono); box-shadow: 0 30px 80px rgb(0 0 0 / 0.35); }
+  .console .dim { color: #9aa58c; font-size: 20px; }
+
+  /* --- Migration --- */
+  .mig { left: 340px; top: 34px; width: 1240px; height: 775px; }
+  .mig img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mig .after { clip-path: inset(0 100% 0 0); }
+  .mig .divider { position: absolute; top: 0; bottom: 0; width: 6px; margin-left: -3px; background: var(--accent); box-shadow: 0 0 0 2px var(--ink); }
+  .mig .chip { position: absolute; top: 22px; }
+  .cookie { left: 50%; top: 770px; font: 500 32px var(--mono); background: #10140f; color: #e9ecdf; padding: 20px 30px; border-radius: 18px; white-space: nowrap; box-shadow: 0 30px 80px rgb(0 0 0 / 0.3); }
+  .cookie .ok { color: #9fd39a; font-family: var(--body); font-weight: 700; }
+
+  /* --- End --- */
+  .fin .sun { left: 460px; top: -460px; width: 1000px; height: 1000px; opacity: 0.25; }
+  .fin-logo { left: 700px; top: 300px; width: 170px; height: 170px; }
+  .fin-word { left: 900px; top: 285px; font: 800 200px/1 var(--display); letter-spacing: -0.05em; }
+  .fin-tag { left: 0; right: 0; top: 560px; text-align: center; font: 700 64px var(--display); letter-spacing: -0.02em; }
+  .fin-cmd { left: 50%; top: 700px; font: 500 40px var(--mono); background: var(--ink); color: var(--paper); padding: 18px 30px; border-radius: 16px; }
+  .fin-sub { left: 0; right: 0; top: 830px; text-align: center; font: 500 30px var(--body); color: var(--soft); }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. Hook -->
+  <section class="scene" data-id="hook">
+    <div class="abs chip hook-chip" style="left:40px;top:40px;z-index:2">tarteaucitron, tel quel</div>
+    <div class="abs frame hook-frame">
+      <div class="bar"><i></i><i></i><i></i><span>maison-exemple.fr</span></div>
+      <div class="hook-wrap">
+        <img src="assets/etape0-1-banniere.png" alt="">
+        <svg viewBox="0 0 1280 800" preserveAspectRatio="none">
+          <ellipse id="ann-buttons" cx="892" cy="774" rx="150" ry="34" fill="none" stroke="#e5484d" stroke-width="5" stroke-linecap="round"/>
+          <text id="ann-buttons-t" x="830" y="722" class="hook-label">boutons imposés</text>
+          <path id="ann-typo" d="M150 792 q 30 -10 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0" fill="none" stroke="#e5484d" stroke-width="5" stroke-linecap="round"/>
+          <text id="ann-typo-t" x="260" y="722" class="hook-label">typo à part</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Catalog -->
+  <section class="scene catalogue" data-id="catalogue">
+    <div class="marquee" id="mq1" style="top:70px"></div>
+    <div class="marquee" id="mq2" style="top:160px"></div>
+    <div class="marquee" id="mq3" style="top:880px"></div>
+    <div class="abs count" id="count">0</div>
+    <div class="abs count-label" id="count-label">services tiers, prêts à l’emploi</div>
+    <div class="abs chip accent lock" id="lock" style="font-size:34px;padding:16px 28px">🔒 uniquement après consentement</div>
+  </section>
+
+  <!-- 3. Idea -->
+  <section class="scene" data-id="idee">
+    <svg class="abs sun" id="sun1" viewBox="0 0 200 200"></svg>
+    <svg class="abs logo-big" id="logo-big" viewBox="0 0 26 26"></svg>
+    <div class="abs word" id="word"><span>z</span><span>e</span><span>s</span><span>t</span><span>e</span></div>
+    <div class="abs tagline" id="tagline"><span id="tag1">Le catalogue de tarteaucitron.</span><br><span id="tag2"><mark id="mark">Votre</mark> bannière.</span></div>
+  </section>
+
+  <!-- 4. Command -->
+  <section class="scene" data-id="cli">
+    <div class="abs term" id="term">
+      <div class="tbar"><i></i><i></i><i></i></div>
+      <pre id="term-text"></pre>
+    </div>
+    <div class="abs card" id="card1" style="left:150px"><div class="shot" style="background-image:url(assets/skin-bits-zeste-1-banniere.png)"></div><div class="name">Bits UI <small>bits-ui</small></div></div>
+    <div class="abs card" id="card2" style="left:700px"><div class="shot" style="background-image:url(assets/skin-ark-pelure-1-banniere.png);background-position:-160px -560px"></div><div class="name">Ark UI <small>@ark-ui/svelte</small></div></div>
+    <div class="abs card" id="card3" style="left:1250px"><div class="shot" style="background-image:url(assets/skin-shadcn-zeste-1-banniere.png)"></div><div class="name">shadcn-svelte <small>components.json</small></div></div>
+  </section>
+
+  <!-- 5. Styles -->
+  <section class="scene" data-id="styles">
+    <div class="abs tile" id="t1" style="left:240px;top:36px"><img src="assets/skin-bits-zeste-1-banniere.png" alt=""><span class="chip">Zeste · clair</span></div>
+    <div class="abs tile" id="t2" style="left:990px;top:36px"><img src="assets/skin-ark-pelure-1-banniere.png" alt=""><span class="chip">Pelure · clair</span></div>
+    <div class="abs tile" id="t3" style="left:240px;top:500px"><img src="assets/skin-ark-zeste-sombre-1-banniere.png" alt=""><span class="chip">Zeste · sombre</span></div>
+    <div class="abs tile" id="t4" style="left:990px;top:500px"><img src="assets/skin-shadcn-pelure-sombre-1-banniere.png" alt=""><span class="chip">Pelure · sombre · shadcn</span></div>
+    <div class="abs tokens" id="tokens"><span class="dim" style="color:#8f9a85">/* theme.css */</span><br><span class="sw" style="background:#18301f"></span>--zeste-ink: #18301f;<br><span class="sw" id="sw-accent" style="background:#f5d742"></span>--zeste-accent: <span id="accent-val">#f5d742</span>;</div>
+  </section>
+
+  <!-- 6. Your components -->
+  <section class="scene" data-id="custom">
+    <div class="abs chip accent ds-chip" id="ds-chip">Votre Button · votre Modal · votre Toggle</div>
+    <div class="abs code" id="code">
+      <div class="code-title">src/lib/components/zeste/CookieBanner.svelte</div>
+      <pre><span class="line del" id="del">- &lt;button class="…" {@attach zeste.actions.denyAll}&gt;</span><span class="line add" id="add">+ &lt;Button variant="secondary" <mark id="attach">{@attach zeste.actions.denyAll}</mark>&gt;</span></pre>
+    </div>
+    <div class="abs frame site" id="site">
+      <div class="bar"><i></i><i></i><i></i><span>maison-exemple.fr</span></div>
+      <div class="layers"><img src="assets/etape1-1-banniere.png" alt=""><img id="site-after" src="assets/etape4-1-banniere.png" alt=""></div>
+    </div>
+  </section>
+
+  <!-- 6. Journey -->
+  <section class="scene" data-id="parcours">
+    <div class="abs frame demo-frame" id="demo-frame">
+      <div class="bar"><i></i><i></i><i></i><span>maison-exemple.fr</span></div>
+      <video id="clip" src="assets/parcours.mp4" muted playsinline preload="auto"></video>
+    </div>
+    <div class="abs chip accent badge" id="badge" style="z-index:2">Démo réelle · Bits UI</div>
+  </section>
+
+  <!-- 7. Compliance -->
+  <section class="scene" data-id="conformite">
+    <div class="abs zero" id="zero">0</div>
+    <div class="abs zero-label" id="zero-label">requête vers un tiers avant le consentement</div>
+    <div class="abs net" id="net">
+      <div><span>googletagmanager.com</span><b>en attente</b></div>
+      <div><span>youtube-nocookie.com</span><b>en attente</b></div>
+      <div><span>cdn.matomo.cloud</span><b>en attente</b></div>
+    </div>
+    <div class="abs frame guard-frame" id="guard"><div class="bar"><i></i><i></i><i></i><span>mode dev</span></div><img src="assets/garde-fou.jpg" alt=""></div>
+    <div class="abs console" id="console"><span class="dim">Console (dev)</span><br>⚠ [zeste/cnil] « Tout refuser » est nettement plus petit que « Tout accepter »</div>
+  </section>
+
+  <!-- 8. Migration -->
+  <section class="scene" data-id="migration">
+    <div class="abs frame mig" id="mig">
+      <img src="assets/etape0-1-banniere.png" alt="">
+      <img class="after" id="mig-after" src="assets/etape4-1-banniere.png" alt="">
+      <div class="divider" id="mig-div"></div>
+      <span class="chip" style="left:22px">tarteaucitron</span>
+      <span class="chip accent" id="mig-chip" style="right:22px">zeste</span>
+    </div>
+    <div class="abs cookie" id="cookie"><span id="cookie-text"></span> <span class="ok" id="cookie-ok">✓ repris tel quel</span></div>
+  </section>
+
+  <!-- 9. End -->
+  <section class="scene fin" data-id="fin">
+    <svg class="abs sun" id="sun2" viewBox="0 0 200 200"></svg>
+    <svg class="abs fin-logo" id="fin-logo" viewBox="0 0 26 26"></svg>
+    <div class="abs fin-word" id="fin-word">zeste</div>
+    <div class="abs fin-tag" id="fin-tag">Le catalogue de tarteaucitron, <mark style="background:linear-gradient(var(--accent),var(--accent)) no-repeat 0 88%/100% 38%;color:inherit;padding:0 6px">votre bannière.</mark></div>
+    <div class="abs fin-cmd" id="fin-cmd">npx zeste add</div>
+    <div class="abs fin-sub" id="fin-sub">Svelte 5 · SvelteKit · Bits UI · Ark UI · shadcn-svelte</div>
+  </section>
+
+  <div id="wipe"></div>
+  <div id="caption"></div>
+</div>
+
+<script>
+const TL = /*TIMELINE*/null;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const E = {
+  out: (t) => 1 - Math.pow(1 - t, 3),
+  inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  back: (t) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+  lin: (t) => t,
+};
+const P = (lt, start, dur, e = E.out) => e(clamp((lt - start) / dur));
+const lerp = (a, b, k) => a + (b - a) * k;
+function tf(el, { x = 0, y = 0, s = 1, r = 0, o = 1, extra = '' } = {}) {
+  el.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg) ${extra}`;
+  el.style.opacity = o;
+}
+const scene = Object.fromEntries(TL.scenes.map((s) => [s.id, s]));
+
+// ---------- Generated decor ----------
+const WEDGE = '<circle cx="13" cy="13" r="12" fill="#f5d742" stroke="#18301f" stroke-width="1.3"/><g stroke="#18301f" stroke-width="1"><line x1="13" y1="3" x2="13" y2="23"/><line x1="3" y1="13" x2="23" y2="13"/><line x1="6" y1="6" x2="20" y2="20"/><line x1="20" y1="6" x2="6" y2="20"/></g><circle cx="13" cy="13" r="2.2" fill="#fffdf4"/>';
+$('logo-big').innerHTML = WEDGE;
+$('fin-logo').innerHTML = WEDGE;
+const SUN = (() => {
+  let g = '<circle cx="100" cy="100" r="98" fill="#f5d742" opacity="0.5"/>';
+  for (let i = 0; i < 16; i++) {
+    const a0 = (i / 16) * Math.PI * 2, a1 = ((i + 1) / 16) * Math.PI * 2;
+    const p = (a) => `${100 + 92 * Math.cos(a)} ${100 + 92 * Math.sin(a)}`;
+    g += `<path d="M100 100 L${p(a0)} A92 92 0 0 1 ${p(a1)} Z" fill="#f5d742" opacity="${i % 2 ? 0.55 : 0.95}"/>`;
+  }
+  return g + '<circle cx="100" cy="100" r="12" fill="#fffdf4"/>';
+})();
+$('sun1').innerHTML = SUN;
+$('sun2').innerHTML = SUN;
+
+const SERVICES = ['Google Analytics', 'YouTube', 'Matomo', 'Hotjar', 'Meta Pixel', 'Vimeo', 'Google Maps', 'Crisp', 'Intercom', 'LinkedIn Insight', 'TikTok Pixel', 'Plausible', 'HubSpot', 'Mailchimp', 'Typeform', 'Calendly', 'Disqus', 'Spotify', 'Google Ads', 'Clarity', 'Zendesk', 'Twitter / X', 'SoundCloud', 'Dailymotion', 'AT Internet', 'Pinterest', 'Instagram', 'Tawk.to', 'Recaptcha', 'Google Tag Manager'];
+for (const [id, offset] of [['mq1', 0], ['mq2', 9], ['mq3', 17]]) {
+  const list = [...SERVICES.slice(offset), ...SERVICES.slice(0, offset)];
+  $(id).innerHTML = [...list, ...list].map((s) => `<span>${s}</span>`).join('');
+}
+
+// Captions: split by sentence, duration proportional to length
+const CAPTIONS = TL.scenes.flatMap((s) => {
+  const parts = s.caption.match(/[^.?…:]+[.?…:]*\s*/g).map((x) => x.trim()).filter(Boolean);
+  const merged = [];
+  for (const part of parts) {
+    if (merged.length && merged[merged.length - 1].length < 28) merged[merged.length - 1] += ' ' + part;
+    else merged.push(part);
+  }
+  const total = merged.reduce((n, p) => n + p.length, 0);
+  let t = s.voiceStart;
+  return merged.map((text) => {
+    const d = (s.voiceDuration * text.length) / total;
+    const c = { text, start: t, end: t + d };
+    t += d;
+    return c;
+  });
+});
+
+// "zeste" transitions (lemon flat wipe) before these scenes; cross-fades for the others
+const WIPES = ['catalogue', 'cli', 'conformite', 'fin'].map((id) => scene[id].start);
+const WIPE_HALF = 0.32;
+
+// Sound effects: declared here, next to the animations that trigger them
+const SFX = [];
+const sfx = (name, t, gain = 1) => SFX.push({ name, t: +t.toFixed(3), gain });
+WIPES.forEach((t) => sfx('whoosh', t - WIPE_HALF - 0.05, 0.9));
+['styles', 'custom', 'parcours', 'migration'].forEach((id) => sfx('whoosh', scene[id].start - 0.2, 0.35));
+const CUSTOM_SWAP = 3.6;
+sfx('pop', scene.custom.voiceStart + CUSTOM_SWAP, 0.6);
+sfx('pop', scene.custom.voiceStart + 5.6, 0.5);
+const CMD = 'npx zeste add';
+const TYPE_START = 0.5, TYPE_RATE = 13;
+for (let i = 0; i < CMD.length; i++) sfx('tick', scene.cli.start + TYPE_START + i / TYPE_RATE, 0.5);
+const OUT_START = TYPE_START + CMD.length / TYPE_RATE + 0.45;
+for (let i = 0; i < 5; i++) sfx('tick', scene.cli.start + OUT_START + i * 0.16, 0.35);
+const CARDS_AT = 4.3;
+[0, 1, 2].forEach((i) => sfx('pop', scene.cli.start + CARDS_AT + i * 0.22, 0.6));
+[0, 1, 2, 3].forEach((i) => sfx('pop', scene.styles.start + 0.25 + i * 0.18, 0.45));
+sfx('pop', scene.idee.start + 0.25, 0.6);
+sfx('pop', scene.catalogue.start + 6.4, 0.6);
+[1.62, 3.42, 5.02].forEach((c) => sfx('click', scene.parcours.start + 0.3 + c, 0.7));
+sfx('pop', scene.conformite.start + 5.1, 0.5);
+sfx('pop', scene.conformite.start + 6.3, 0.6);
+sfx('pop', scene.fin.start + 0.3, 0.6);
+window.SFX = SFX;
+
+// ---------- Render one frame at time t ----------
+const updaters = {
+  hook(lt, L) {
+    tf(document.querySelector('.hook-frame'), {
+      y: lerp(70, 0, P(lt, 0, 0.8)),
+      s: lerp(1, 1.18, P(lt, 1.6, 5.2, E.inOut)),
+      o: P(lt, 0, 0.5),
+    });
+    tf(document.querySelector('.hook-chip'), { y: lerp(-30, 0, P(lt, 0.3, 0.6, E.back)), o: P(lt, 0.3, 0.4) });
+    const v = scene.hook.voiceStart - scene.hook.start;
+    const btn = P(lt, v + 3.6, 0.7, E.inOut);
+    const ell = $('ann-buttons');
+    const len = 2 * Math.PI * 150;
+    ell.style.strokeDasharray = len;
+    ell.style.strokeDashoffset = len * (1 - btn);
+    $('ann-buttons-t').style.opacity = P(lt, v + 4.0, 0.3);
+    const typo = P(lt, v + 4.9, 0.8, E.inOut);
+    const path = $('ann-typo');
+    path.style.strokeDasharray = 600;
+    path.style.strokeDashoffset = 600 * (1 - typo);
+    $('ann-typo-t').style.opacity = P(lt, v + 5.2, 0.3);
+  },
+  catalogue(lt, L) {
+    const v = scene.catalogue.voiceStart - scene.catalogue.start;
+    [['mq1', -1], ['mq2', 1], ['mq3', -1]].forEach(([id, dir], i) => {
+      const el = $(id);
+      const w = el.scrollWidth / 2;
+      const x = dir < 0 ? -((lt * 90 + i * 300) % w) : -w + ((lt * 90 + i * 300) % w);
+      tf(el, { x, o: P(lt, 0.1 + i * 0.15, 0.8) });
+    });
+    const k = P(lt, v + 2.2, 2.6, E.out);
+    $('count').textContent = String(Math.round(247 * k));
+    tf($('count'), { s: lerp(0.8, 1, P(lt, v + 2.2, 0.8, E.back)), o: P(lt, v + 2.1, 0.4) });
+    tf($('count-label'), { y: lerp(30, 0, P(lt, v + 3.0, 0.6)), o: P(lt, v + 3.0, 0.5) });
+    const lock = $('lock');
+    tf(lock, { x: -lock.offsetWidth / 2, y: lerp(40, 0, P(lt, 6.4, 0.6, E.back)), s: lerp(0.7, 1, P(lt, 6.4, 0.6, E.back)), o: P(lt, 6.4, 0.3) });
+  },
+  idee(lt, L) {
+    tf($('sun1'), { r: lt * 12, s: lerp(0.6, 1, P(lt, 0, 1.4)), o: P(lt, 0, 0.8) * 0.22 / 0.22 });
+    $('sun1').style.opacity = 0.22 * P(lt, 0, 0.8);
+    tf($('logo-big'), { s: P(lt, 0.2, 0.9, E.back), r: lerp(-140, 0, P(lt, 0.2, 1.0, E.out)), o: P(lt, 0.2, 0.3) });
+    [...$('word').children].forEach((el, i) => tf(el, { y: lerp(80, 0, P(lt, 0.45 + i * 0.07, 0.6, E.back)), o: P(lt, 0.45 + i * 0.07, 0.3) }));
+    tf($('tag1'), { y: lerp(30, 0, P(lt, 1.0, 0.6)), o: P(lt, 1.0, 0.5), extra: '' });
+    $('tag1').style.display = 'inline-block';
+    $('tag2').style.display = 'inline-block';
+    tf($('tag2'), { y: lerp(30, 0, P(lt, 2.0, 0.6)), o: P(lt, 2.0, 0.5) });
+    $('mark').style.backgroundSize = `${100 * P(lt, 2.5, 0.7, E.inOut)}% 38%`;
+  },
+  cli(lt, L) {
+    const typed = Math.max(0, Math.min(CMD.length, Math.floor((lt - TYPE_START) * TYPE_RATE)));
+    const outLines = [
+      '<span class="ok">✔ zeste (bits, style zeste)</span> <span class="dim">→ src/lib/components/zeste</span>',
+      '  <span class="ok">+</span> CookieBanner.svelte',
+      '  <span class="ok">+</span> CookiePreferences.svelte',
+      '  <span class="ok">+</span> CookiePlaceholder.svelte',
+      '  <span class="ok">+</span> theme.css',
+    ];
+    const shown = Math.max(0, Math.min(outLines.length, Math.floor((lt - OUT_START) / 0.16) + 1));
+    const caretOn = Math.floor(lt * 2.2) % 2 === 0 || typed < CMD.length;
+    $('term-text').innerHTML = `<span class="prompt">$</span> ${CMD.slice(0, typed)}${lt < OUT_START ? (caretOn ? '<span class="caret"></span>' : '') : ''}` + (lt >= OUT_START ? '\n' + outLines.slice(0, shown).join('\n') : '');
+    const shrink = P(lt, CARDS_AT - 0.5, 0.8, E.inOut);
+    tf($('term'), { y: lerp(lerp(60, 0, P(lt, 0, 0.6)), -120, shrink), s: lerp(1, 0.74, shrink), o: P(lt, 0, 0.4) });
+    ['card1', 'card2', 'card3'].forEach((id, i) => {
+      const k = P(lt, CARDS_AT + i * 0.22, 0.7, E.back);
+      tf($(id), { y: lerp(260, 0, k), r: lerp(6 - i * 6, 0, k), o: P(lt, CARDS_AT + i * 0.22, 0.25) });
+    });
+  },
+  styles(lt, L) {
+    ['t1', 't2', 't3', 't4'].forEach((id, i) => {
+      const k = P(lt, 0.25 + i * 0.18, 0.7, E.back);
+      tf($(id), { s: lerp(0.86, 1, k), y: lerp(40, 0, k), o: P(lt, 0.25 + i * 0.18, 0.3) });
+    });
+    const v = scene.styles.voiceStart - scene.styles.start;
+    const k = P(lt, v + 2.2, 0.6, E.back);
+    tf($('tokens'), { s: lerp(0.85, 1, k), y: lerp(40, 0, k), o: P(lt, v + 2.2, 0.3) });
+    const accents = ['#f5d742', '#ff8a65', '#7cc4ff', '#f5d742'];
+    const idx = Math.min(accents.length - 1, Math.max(0, Math.floor((lt - (v + 3.2)) / 0.7)));
+    $('sw-accent').style.background = accents[idx];
+    $('accent-val').textContent = accents[idx];
+  },
+  custom(lt, L) {
+    const v = scene.custom.voiceStart - scene.custom.start;
+    tf($('code'), { x: lerp(-60, 0, P(lt, 0, 0.7)), o: P(lt, 0, 0.5) });
+    tf($('site'), { x: lerp(60, 0, P(lt, 0.2, 0.7)), o: P(lt, 0.2, 0.5) });
+    // the generated line is struck through, then replaced by the design system's Button
+    const strike = P(lt, v + 3.0, 0.5);
+    $('del').style.textDecoration = strike > 0 ? 'line-through' : 'none';
+    $('del').style.opacity = lerp(1, 0.45, strike);
+    const add = P(lt, v + CUSTOM_SWAP, 0.5, E.back);
+    tf($('add'), { y: lerp(24, 0, add), o: P(lt, v + CUSTOM_SWAP, 0.25) });
+    $('site-after').style.opacity = P(lt, v + CUSTOM_SWAP + 0.2, 0.8, E.inOut);
+    $('attach').style.backgroundSize = `${100 * P(lt, v + 5.2, 0.6, E.inOut)}% 100%`;
+    const chip = P(lt, v + 5.6, 0.5, E.back);
+    tf($('ds-chip'), { y: lerp(-20, 0, chip), s: lerp(0.8, 1, chip), o: P(lt, v + 5.6, 0.3) });
+  },
+  async parcours(lt, L) {
+    tf($('demo-frame'), { y: lerp(60, 0, P(lt, 0, 0.6)), s: lerp(0.96, 1, P(lt, 0, 0.6)), o: P(lt, 0, 0.4) });
+    tf($('badge'), { y: lerp(-20, 0, P(lt, 0.4, 0.5, E.back)), o: P(lt, 0.4, 0.3) });
+    const clip = $('clip');
+    const target = clamp(lt - 0.3, 0, clip.duration - 0.04);
+    if (Math.abs(clip.currentTime - target) > 0.001) {
+      await new Promise((res) => { clip.addEventListener('seeked', res, { once: true }); clip.currentTime = target; });
+    }
+  },
+  conformite(lt, L) {
+    tf($('zero'), { s: lerp(0.7, 1, P(lt, 0.2, 0.7, E.back)), o: P(lt, 0.2, 0.3) });
+    tf($('zero-label'), { y: lerp(30, 0, P(lt, 0.6, 0.6)), o: P(lt, 0.6, 0.5) });
+    [...$('net').children].forEach((el, i) => tf(el, { x: lerp(-40, 0, P(lt, 1.4 + i * 0.25, 0.5)), o: P(lt, 1.4 + i * 0.25, 0.4) }));
+    tf($('guard'), { x: lerp(120, 0, P(lt, 5.0, 0.8)), o: P(lt, 5.0, 0.5) });
+    tf($('console'), { y: lerp(60, 0, P(lt, 6.2, 0.6, E.back)), o: P(lt, 6.2, 0.3) });
+  },
+  migration(lt, L) {
+    tf($('mig'), { y: lerp(50, 0, P(lt, 0, 0.6)), o: P(lt, 0, 0.4) });
+    const k = P(lt, 0.9, 2.0, E.inOut);
+    $('mig-after').style.clipPath = `inset(0 ${100 - 100 * k}% 0 0)`;
+    $('mig-div').style.left = `${100 * k}%`;
+    $('mig-div').style.opacity = k > 0 && k < 1 ? 1 : 0;
+    const v = scene.migration.voiceStart - scene.migration.start;
+    const cookie = 'tarteaucitron=!gtag=true!youtube=false';
+    const n = Math.max(0, Math.min(cookie.length, Math.floor((lt - (v + 2.7)) * 32)));
+    $('cookie-text').textContent = cookie.slice(0, n);
+    const c = $('cookie');
+    tf(c, { x: -c.offsetWidth / 2, y: lerp(30, 0, P(lt, v + 2.5, 0.5)), o: P(lt, v + 2.5, 0.3) });
+    $('cookie-ok').style.opacity = P(lt, v + 2.7 + cookie.length / 32 + 0.1, 0.3);
+  },
+  fin(lt, L) {
+    $('sun2').style.opacity = 0.25 * P(lt, 0, 0.8);
+    tf($('sun2'), { r: lt * 10, s: lerp(0.7, 1, P(lt, 0, 1.2)), o: 0.25 * P(lt, 0, 0.8) });
+    tf($('fin-logo'), { s: P(lt, 0.3, 0.8, E.back), r: lerp(-160, 0, P(lt, 0.3, 0.9)), o: P(lt, 0.3, 0.3) });
+    tf($('fin-word'), { x: lerp(-40, 0, P(lt, 0.5, 0.6)), o: P(lt, 0.5, 0.4) });
+    tf($('fin-tag'), { y: lerp(30, 0, P(lt, 1.2, 0.6)), o: P(lt, 1.2, 0.5) });
+    const cmd = $('fin-cmd');
+    tf(cmd, { x: -cmd.offsetWidth / 2, y: lerp(30, 0, P(lt, 2.4, 0.6, E.back)), o: P(lt, 2.4, 0.3) });
+    tf($('fin-sub'), { o: P(lt, 3.0, 0.6) });
+  },
+};
+
+async function render(t) {
+  for (const s of TL.scenes) {
+    const el = document.querySelector(`.scene[data-id="${s.id}"]`);
+    const lt = t - s.start;
+    const isWipeIn = WIPES.includes(s.start);
+    // cross-fade: appears over the previous scene during the 0.35 s before its start;
+    // wipe: hard switch at the moment the flat color covers the screen
+    const fadeInStart = s.start - (isWipeIn ? 0 : 0.35);
+    const visibleEnd = s.start + s.length;
+    let o = 0;
+    if (t >= fadeInStart && t < visibleEnd) o = isWipeIn ? 1 : clamp((t - fadeInStart) / 0.35);
+    if (s.id === 'hook' && t < visibleEnd) o = 1;
+    if (s.id === 'fin' && lt > s.length - 0.6) o = clamp((s.length - lt) / 0.6);
+    el.style.opacity = o;
+    el.style.visibility = o > 0 ? 'visible' : 'hidden';
+    if (o > 0) await updaters[s.id](Math.max(lt, 0), s.length);
+  }
+  // wipe
+  let wx = -120;
+  for (const w of WIPES) {
+    const d = t - w;
+    if (d > -WIPE_HALF && d < WIPE_HALF) {
+      wx = d < 0 ? lerp(-120, -10, E.inOut((d + WIPE_HALF) / WIPE_HALF)) : lerp(-10, 110, E.inOut(d / WIPE_HALF));
+    }
+  }
+  $('wipe').style.transform = `translateX(${wx}%) skewX(-12deg)`;
+  // captions
+  const cap = CAPTIONS.find((c) => t >= c.start - 0.1 && t < c.end + 0.25);
+  const el = $('caption');
+  if (cap) {
+    el.textContent = cap.text;
+    const k = clamp((t - (cap.start - 0.1)) / 0.2);
+    el.style.opacity = k;
+    el.style.transform = `translateX(-50%) translateY(${(1 - k) * 12}px)`;
+  } else el.style.opacity = 0;
+}
+window.render = render;
+window.ready = (async () => {
+  await document.fonts.ready;
+  const clip = $('clip');
+  if (clip.readyState < 1) await new Promise((r) => clip.addEventListener('loadedmetadata', r, { once: true }));
+  await Promise.all([...document.images].map((img) => (img.complete ? null : new Promise((r) => (img.onload = img.onerror = r)))));
+  await render(0);
+  return true;
+})();
+</script>
+</body>
+</html>
