@@ -184,6 +184,9 @@ describe('example skins match the templates', () => {
     ['skin-react-radix', 'react', 'radix', 'components'],
     ['skin-react-ark', 'react', 'ark', 'components'],
     ['skin-react-shadcn', 'react', 'shadcn', 'components'],
+    ['skin-vue-reka', 'vue', 'reka', 'app/components'],
+    ['skin-vue-ark', 'vue', 'ark', 'app/components'],
+    ['skin-vue-shadcn', 'vue', 'shadcn', 'app/components'],
   ];
   for (const [app, framework, ui, base] of skins) {
     for (const [style, folder] of [['zeste', 'zeste'], ['pelure', 'zeste-pelure']] as Array<[Style, string]>) {
