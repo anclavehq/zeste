@@ -37,6 +37,9 @@ export default defineConfig({
         ['skin-react-radix', 4326],
         ['skin-react-ark', 4327],
         ['skin-react-shadcn', 4328],
+        ['skin-vue-reka', 4331],
+        ['skin-vue-ark', 4332],
+        ['skin-vue-shadcn', 4333],
       ] as const
     ).flatMap(([name, port]) =>
       (['zeste', 'pelure'] as const).flatMap((style) =>
@@ -112,6 +115,16 @@ export default defineConfig({
       url: 'http://localhost:4329/',
       reuseExistingServer: true,
     },
+    ...[
+      ['skin-vue-reka', '4331'],
+      ['skin-vue-ark', '4332'],
+      ['skin-vue-shadcn', '4333'],
+    ].map(([app, port]) => ({
+      command: `node ../examples/${app}/.output/server/index.mjs`,
+      env: { PORT: port },
+      url: `http://localhost:${port}/`,
+      reuseExistingServer: true,
+    })),
     ...[
       ['svelte-spa', '4324'],
       ['react-spa', '4325'],
