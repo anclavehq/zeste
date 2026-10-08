@@ -1,0 +1,62 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  color: #1c1917;
+}
+nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e7e5e4;
+}
+main {
+  padding: 1rem;
+  max-width: 48rem;
+}
+.zeste-banner,
+.reload {
+  position: fixed;
+  inset: auto 1rem 1rem 1rem;
+  padding: 1rem;
+  background: #fafaf9;
+  border: 1px solid #d6d3d1;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.1);
+}
+.reload {
+  inset: 1rem 1rem auto auto;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.placeholder {
+  display: grid;
+  place-items: center;
+  width: 560px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #f5f5f4;
+  border-radius: 0.5rem;
+}
+dialog {
+  border: 1px solid #d6d3d1;
+  border-radius: 0.75rem;
+  max-width: 32rem;
+}
+fieldset {
+  border: 1px solid #e7e5e4;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.details {
+  font-size: 0.875rem;
+  color: #57534e;
+}
