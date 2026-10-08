@@ -1,8 +1,8 @@
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { add, detectFramework, detectUi } from '../src/add.ts';
+import { add, detectFramework, detectUi, type Framework, type Style, type Ui } from '../src/add.ts';
 
 function project(deps: Record<string, string>, files: Record<string, string> = {}) {
   const cwd = mkdtempSync(join(tmpdir(), 'zeste-cli-'));
@@ -137,4 +137,33 @@ describe('zeste add (React)', () => {
       'Missing dependencies: install @zeste/react @zeste/services @ark-ui/react',
     ]);
   });
+});
+
+// The example skins are committed as generated: they must not drift from the templates.
+describe('example skins match the templates', () => {
+  const examples = join(import.meta.dirname, '../../../examples');
+  const skins: Array<[app: string, framework: Framework, ui: Ui, base: string]> = [
+    ['skin-bits', 'svelte', 'bits', 'src/lib/components'],
+    ['skin-ark', 'svelte', 'ark', 'src/lib/components'],
+    ['skin-shadcn', 'svelte', 'shadcn', 'src/lib/components'],
+    ['skin-react-radix', 'react', 'radix', 'components'],
+    ['skin-react-ark', 'react', 'ark', 'components'],
+    ['skin-react-shadcn', 'react', 'shadcn', 'components'],
+  ];
+  for (const [app, framework, ui, base] of skins) {
+    for (const [style, folder] of [['zeste', 'zeste'], ['pelure', 'zeste-pelure']] as Array<[Style, string]>) {
+      it(`${app}, ${style}`, () => {
+        // shadcn: the alias of the app's components.json ends up in the imports.
+        const config = join(examples, app, 'components.json');
+        const cwd = project({}, ui === 'shadcn' ? { 'components.json': readFileSync(config, 'utf8') } : {});
+        const expected = join(examples, app, base, folder);
+        add({ cwd, framework, ui, style, dir: 'out' });
+        for (const file of readdirSync(join(cwd, 'out'))) {
+          expect(readFileSync(join(expected, file), 'utf8'), `${app}/${folder}/${file}`).toBe(
+            readFileSync(join(cwd, 'out', file), 'utf8'),
+          );
+        }
+      });
+    }
+  }
 });
