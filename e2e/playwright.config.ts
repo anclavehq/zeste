@@ -32,6 +32,9 @@ export default defineConfig({
         ['skin-bits', 4319],
         ['skin-ark', 4320],
         ['skin-shadcn', 4321],
+        ['skin-react-radix', 4326],
+        ['skin-react-ark', 4327],
+        ['skin-react-shadcn', 4328],
       ] as const
     ).flatMap(([name, port]) =>
       (['zeste', 'pelure'] as const).flatMap((style) =>
@@ -39,7 +42,7 @@ export default defineConfig({
           name: [name, style === 'pelure' && 'pelure', theme === 'dark' && 'dark'].filter(Boolean).join('-'),
           testMatch: /skins\.spec\.ts/,
           // Pelure (except shadcn) deliberately keeps the same flat color in dark mode; the rest adapts.
-          metadata: { theme, adaptsToDark: !(style === 'pelure' && name !== 'skin-shadcn') },
+          metadata: { theme, adaptsToDark: !(style === 'pelure' && !name.endsWith('shadcn')) },
           use: {
             baseURL: `http://localhost:${port}`,
             // demo cookies read on the server to pick the style and theme
@@ -91,6 +94,15 @@ export default defineConfig({
       url: 'http://localhost:4323/',
       reuseExistingServer: true,
     },
+    ...[
+      ['skin-react-radix', '4326'],
+      ['skin-react-ark', '4327'],
+      ['skin-react-shadcn', '4328'],
+    ].map(([app, port]) => ({
+      command: `pnpm --dir ../examples/${app} exec next start --port ${port}`,
+      url: `http://localhost:${port}/`,
+      reuseExistingServer: true,
+    })),
     ...[
       ['svelte-spa', '4324'],
       ['react-spa', '4325'],
