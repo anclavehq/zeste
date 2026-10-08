@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { add, detectUi } from '../src/add.ts';
+import { add, detectFramework, detectUi } from '../src/add.ts';
 
 function project(deps: Record<string, string>, files: Record<string, string> = {}) {
   const cwd = mkdtempSync(join(tmpdir(), 'zeste-cli-'));
@@ -15,13 +15,29 @@ function project(deps: Record<string, string>, files: Record<string, string> = {
 }
 
 const ZESTE = { '@zeste/svelte': '*', '@zeste/services': '*' };
+const ZESTE_REACT = { '@zeste/react': '*', '@zeste/services': '*', react: '*' };
 
-describe('UI library detection', () => {
-  it('shadcn-svelte (components.json) takes precedence over Ark UI and Bits UI', () => {
-    expect(detectUi(project({ 'bits-ui': '*' }, { 'components.json': '{}' }))).toBe('shadcn');
-    expect(detectUi(project({ '@ark-ui/svelte': '*' }))).toBe('ark');
-    expect(detectUi(project({ 'bits-ui': '*' }))).toBe('bits');
-    expect(detectUi(project({}))).toBeUndefined();
+describe('detection', () => {
+  it('framework: the zeste binding first, then the framework itself', () => {
+    expect(detectFramework(project({ '@zeste/react': '*', svelte: '*' }))).toBe('react');
+    expect(detectFramework(project({ svelte: '*' }))).toBe('svelte');
+    expect(detectFramework(project({ react: '*', 'react-dom': '*' }))).toBe('react');
+    expect(detectFramework(project({}))).toBeUndefined();
+  });
+
+  it('Svelte: shadcn-svelte (components.json) takes precedence over Ark UI and Bits UI', () => {
+    expect(detectUi(project({ 'bits-ui': '*' }, { 'components.json': '{}' }), 'svelte')).toBe('shadcn');
+    expect(detectUi(project({ '@ark-ui/svelte': '*' }), 'svelte')).toBe('ark');
+    expect(detectUi(project({ 'bits-ui': '*' }), 'svelte')).toBe('bits');
+    expect(detectUi(project({}), 'svelte')).toBeUndefined();
+  });
+
+  it('React: shadcn/ui, then Ark UI, then Radix (unified or per-component packages)', () => {
+    expect(detectUi(project({ 'radix-ui': '*' }, { 'components.json': '{}' }), 'react')).toBe('shadcn');
+    expect(detectUi(project({ '@ark-ui/react': '*' }), 'react')).toBe('ark');
+    expect(detectUi(project({ 'radix-ui': '*' }), 'react')).toBe('radix');
+    expect(detectUi(project({ '@radix-ui/react-dialog': '*' }), 'react')).toBe('radix');
+    expect(detectUi(project({ '@ark-ui/svelte': '*' }), 'react')).toBeUndefined();
   });
 });
 
@@ -77,7 +93,48 @@ describe('zeste add', () => {
     ]);
   });
 
-  it('fails clearly if the library cannot be guessed', () => {
-    expect(() => add({ cwd: project({}) })).toThrow(/--ui bits\|ark\|shadcn/);
+  it('fails clearly if the framework or the library cannot be guessed', () => {
+    expect(() => add({ cwd: project({}) })).toThrow(/--framework svelte\|react/);
+    expect(() => add({ cwd: project({}), ui: 'ark' })).toThrow(/--framework svelte\|react/);
+    expect(() => add({ cwd: project(ZESTE) })).toThrow(/--ui bits\|ark\|shadcn/);
+    expect(() => add({ cwd: project(ZESTE_REACT) })).toThrow(/--ui radix\|ark\|shadcn/);
+    expect(() => add({ cwd: project(ZESTE_REACT), ui: 'bits' })).toThrow(/not available for react/);
+  });
+});
+
+describe('zeste add (React)', () => {
+  it('Radix: components/ without src/, src/components/ with it', () => {
+    const root = project({ ...ZESTE_REACT, 'radix-ui': '*' });
+    const result = add({ cwd: root });
+    expect(result).toMatchObject({ framework: 'react', ui: 'radix', dir: 'components/zeste', warnings: [] });
+    expect(result.written).toHaveLength(5);
+    const prefs = readFileSync(join(root, 'components/zeste/CookiePreferences.tsx'), 'utf8');
+    expect(prefs).toMatch(/^'use client';/);
+    expect(prefs).toContain("from 'radix-ui'");
+
+    const withSrc = project({ ...ZESTE_REACT, '@ark-ui/react': '*' }, { 'src/app/page.tsx': '' });
+    expect(add({ cwd: withSrc, style: 'pelure' }).dir).toBe('src/components/zeste');
+    expect(readFileSync(join(withSrc, 'src/components/zeste/CookieBanner.tsx'), 'utf8')).toContain('"pelure" style');
+    expect(readFileSync(join(withSrc, 'src/components/zeste/theme.css'), 'utf8')).toContain("[data-zeste-skin='pelure']");
+  });
+
+  it('shadcn/ui: resolves the @/ alias (src/ or root) and reports missing components', () => {
+    const cwd = project(ZESTE_REACT, {
+      'components.json': JSON.stringify({ aliases: { ui: '@/components/ui' } }),
+      'src/components/ui/button.tsx': '',
+      'src/components/ui/dialog.tsx': '',
+    });
+    const result = add({ cwd });
+    expect(result.warnings).toEqual(['Missing shadcn components: npx shadcn@latest add switch label']);
+    const prefs = readFileSync(join(cwd, 'src/components/zeste/CookiePreferences.tsx'), 'utf8');
+    expect(prefs).toContain("from '@/components/ui/dialog'");
+    expect(prefs).not.toContain('%UI%');
+    expect(result.written).toHaveLength(4);
+  });
+
+  it('reports missing dependencies', () => {
+    expect(add({ cwd: project({ react: '*' }), ui: 'ark' }).warnings).toEqual([
+      'Missing dependencies: install @zeste/react @zeste/services @ark-ui/react',
+    ]);
   });
 });
