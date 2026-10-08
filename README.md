@@ -120,3 +120,9 @@ but is not checked by the guard.
   "reject" button — hex or oklch — or the lack of a link to change one's mind).
 - On the real network (GA4, YouTube, Matomo Cloud): `_ga` cookies set only after acceptance and
   removed on withdrawal; YouTube iframe rendered / removed without a reload; Matomo hit sent; choice remembered.
+
+## License
+
+[MIT](LICENSE). The service catalog and its translations come from
+[tarteaucitron.js](https://github.com/AmauriC/tarteaucitron.js) (MIT, Copyright (c) 2014 AmauriC): see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
