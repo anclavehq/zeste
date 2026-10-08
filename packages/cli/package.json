@@ -1,7 +1,7 @@
 {
   "name": "zeste",
   "version": "0.0.0",
-  "description": "zeste CLI: copies an editable consent banner, preferences and placeholder into your project. Ready-made for Bits UI, Ark UI, shadcn-svelte, Radix and shadcn/ui; zeste itself works with any UI",
+  "description": "zeste CLI: copies an editable consent banner, preferences and placeholder into your project. Ready-made for Svelte, React and Vue with Bits UI, Radix, Reka UI, Ark UI and shadcn; zeste itself works with any UI",
   "type": "module",
   "license": "MIT",
   "bin": {

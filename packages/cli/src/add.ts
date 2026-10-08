@@ -2,13 +2,14 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const FRAMEWORKS = ['svelte', 'react'] as const;
+export const FRAMEWORKS = ['svelte', 'react', 'vue'] as const;
 export type Framework = (typeof FRAMEWORKS)[number];
 
 /** UI libraries supported by each framework. */
 export const UIS = {
   svelte: ['bits', 'ark', 'shadcn'],
   react: ['radix', 'ark', 'shadcn'],
+  vue: ['reka', 'ark', 'shadcn'],
 } as const satisfies Record<Framework, readonly string[]>;
 export type Ui = (typeof UIS)[Framework][number];
 
@@ -20,7 +21,9 @@ const TEMPLATES = join(dirname(fileURLToPath(import.meta.url)), '..', 'templates
 
 interface FrameworkSetup {
   files: string[];
-  dir: (cwd: string) => string;
+  /** Source folder, where `@/` points: `src/`, Nuxt's `app/`, or the project root. */
+  root: (cwd: string) => string;
+  dir: (root: string) => string;
   /** Packages each UI library needs, besides the zeste ones. */
   uiPackages: Partial<Record<Ui, string>>;
   /** Detection order after components.json (shadcn). */
@@ -34,6 +37,7 @@ interface FrameworkSetup {
 const SETUP: Record<Framework, FrameworkSetup> = {
   svelte: {
     files: ['CookieBanner.svelte', 'CookiePreferences.svelte', 'CookiePlaceholder.svelte', 'index.ts'],
+    root: () => 'src',
     dir: () => 'src/lib/components/zeste',
     uiPackages: { bits: 'bits-ui', ark: '@ark-ui/svelte' },
     detect: [
@@ -47,7 +51,8 @@ const SETUP: Record<Framework, FrameworkSetup> = {
   react: {
     files: ['CookieBanner.tsx', 'CookiePreferences.tsx', 'CookiePlaceholder.tsx', 'index.ts'],
     // Next.js and Vite projects keep their code in src/ when it exists, at the root otherwise.
-    dir: (cwd) => (existsSync(join(cwd, 'src')) ? 'src/components/zeste' : 'components/zeste'),
+    root: (cwd) => (existsSync(join(cwd, 'src')) ? 'src' : ''),
+    dir: (root) => join(root, 'components/zeste'),
     uiPackages: { radix: 'radix-ui', ark: '@ark-ui/react' },
     detect: [
       ['@ark-ui/react', 'ark'],
@@ -57,6 +62,20 @@ const SETUP: Record<Framework, FrameworkSetup> = {
     defaultUiAlias: '@/components/ui',
     shadcnFile: (component) => `${component}.tsx`,
     shadcnCli: 'shadcn@latest',
+  },
+  vue: {
+    files: ['CookieBanner.vue', 'CookiePreferences.vue', 'CookiePlaceholder.vue', 'index.ts'],
+    // Nuxt 4 keeps its code in app/, Vite projects in src/.
+    root: (cwd) => (existsSync(join(cwd, 'app')) && dependencies(cwd).has('nuxt') ? 'app' : existsSync(join(cwd, 'src')) ? 'src' : ''),
+    dir: (root) => join(root, 'components/zeste'),
+    uiPackages: { reka: 'reka-ui', ark: '@ark-ui/vue' },
+    detect: [
+      ['@ark-ui/vue', 'ark'],
+      ['reka-ui', 'reka'],
+    ],
+    defaultUiAlias: '@/components/ui',
+    shadcnFile: (component) => component,
+    shadcnCli: 'shadcn-vue@latest',
   },
 };
 
@@ -106,8 +125,10 @@ export function detectFramework(cwd: string): Framework | undefined {
   const deps = dependencies(cwd);
   if (deps.has('@zeste/svelte')) return 'svelte';
   if (deps.has('@zeste/react')) return 'react';
+  if (deps.has('@zeste/vue')) return 'vue';
   if (deps.has('svelte')) return 'svelte';
   if (deps.has('react')) return 'react';
+  if (deps.has('vue') || deps.has('nuxt')) return 'vue';
   return undefined;
 }
 
@@ -117,17 +138,17 @@ function frameworkOf(ui: Ui | undefined): Framework | undefined {
   return matches.length === 1 ? matches[0] : undefined;
 }
 
-/** Guesses the project's UI lib: shadcn (components.json), then Ark UI, then Bits UI / Radix. */
+/** Guesses the project's UI lib: shadcn (components.json), then Ark UI, then Bits UI / Radix / Reka UI. */
 export function detectUi(cwd: string, framework: Framework): Ui | undefined {
   if (existsSync(join(cwd, 'components.json'))) return 'shadcn';
   const deps = dependencies(cwd);
   return SETUP[framework].detect.find(([pkg]) => deps.has(pkg))?.[1];
 }
 
-/** Folder of an import alias: `$lib`/`#lib` → src/lib, `@/` → src/ (or the root without src/). */
-function aliasPath(cwd: string, alias: string): string {
+/** Folder of an import alias: `$lib`/`#lib` → src/lib, `@/` and `~/` → the source folder. */
+function aliasPath(cwd: string, root: string, alias: string): string {
   if (/^[$#]lib/.test(alias)) return join(cwd, alias.replace(/^[$#]lib/, 'src/lib'));
-  if (alias.startsWith('@/')) return join(cwd, existsSync(join(cwd, 'src')) ? 'src' : '', alias.slice(2));
+  if (/^[@~]\//.test(alias)) return join(cwd, root, alias.slice(2));
   return join(cwd, alias);
 }
 
@@ -135,7 +156,9 @@ export function add(options: AddOptions): AddResult {
   const { cwd, force = false, style = 'zeste' } = options;
   const framework = options.framework ?? detectFramework(cwd) ?? frameworkOf(options.ui);
   if (!framework) {
-    throw new Error('Cannot guess the project\'s framework (no svelte or react dependency). Specify --framework svelte|react.');
+    throw new Error(
+      `Cannot guess the project's framework (no svelte, react or vue dependency). Specify --framework ${FRAMEWORKS.join('|')}.`,
+    );
   }
   const setup = SETUP[framework];
   const uis: readonly Ui[] = UIS[framework];
@@ -148,7 +171,8 @@ export function add(options: AddOptions): AddResult {
   }
   if (!uis.includes(ui)) throw new Error(`--ui ${ui} is not available for ${framework}: use ${uis.join('|')}.`);
 
-  const dir = join(cwd, options.dir ?? setup.dir(cwd));
+  const root = setup.root(cwd);
+  const dir = join(cwd, options.dir ?? setup.dir(root));
   const warnings: string[] = [];
   const deps = dependencies(cwd);
   const uiPackage = setup.uiPackages[ui];
@@ -159,7 +183,7 @@ export function add(options: AddOptions): AddResult {
   let alias: string | undefined;
   if (ui === 'shadcn') {
     alias = readJson<ShadcnConfig>(join(cwd, 'components.json'))?.aliases?.ui ?? setup.defaultUiAlias;
-    const folder = aliasPath(cwd, alias);
+    const folder = aliasPath(cwd, root, alias);
     const absent = SHADCN_COMPONENTS.filter((c) => !existsSync(join(folder, setup.shadcnFile(c))));
     if (absent.length) warnings.push(`Missing shadcn components: npx ${setup.shadcnCli} add ${absent.join(' ')}`);
   }

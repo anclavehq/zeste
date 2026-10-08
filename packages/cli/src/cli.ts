@@ -5,16 +5,17 @@ import { add, FRAMEWORKS, STYLES, UIS, type Framework, type Style, type Ui } fro
 const HELP = `zeste — consent banner and preferences, ready to edit
 
 Usage:
-  npx zeste add [--framework svelte|react] [--ui <lib>] [--style zeste|pelure] [--dir <folder>] [--force]
+  npx zeste add [--framework svelte|react|vue] [--ui <lib>] [--style zeste|pelure] [--dir <folder>] [--force]
 
 Options:
-  --framework  svelte or react (auto-detected from package.json)
+  --framework  svelte, react or vue (auto-detected from package.json)
   --ui         UI library, auto-detected:
                  Svelte: shadcn (components.json), ark (@ark-ui/svelte), bits (bits-ui)
                  React:  shadcn (components.json), ark (@ark-ui/react), radix (radix-ui)
+                 Vue:    shadcn (components.json), ark (@ark-ui/vue), reka (reka-ui)
   --style      zeste (default): understated, lemon accent · pelure: flat banner, thick outlines
   --dir        Destination folder (default: src/lib/components/zeste for Svelte,
-               src/components/zeste or components/zeste for React)
+               components/zeste in src/, app/ (Nuxt) or the root for React and Vue)
   --force      Overwrite existing files
 `;
 
@@ -39,6 +40,17 @@ Then, where you create zeste (a client component with Next.js):
     <CookiePreferences />
     {/* permanent link to change one's mind (required by EU consent rules) */}
     <button {...zeste.actions.openPreferences}>{zeste.messages.alertSmall}</button>
+  </ZesteProvider>
+`,
+  vue: `
+Then, where you create zeste (app.vue with Nuxt):
+
+  <ZesteProvider :zeste="zeste">
+    <NuxtPage />
+    <CookieBanner />
+    <CookiePreferences />
+    <!-- permanent link to change one's mind (required by EU consent rules) -->
+    <button v-bind="zeste.actions.openPreferences">{{ zeste.messages.alertSmall }}</button>
   </ZesteProvider>
 `,
 };
