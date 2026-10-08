@@ -68,11 +68,15 @@ test.describe('server rendering', () => {
 test('visitor already decided: the banner never appears, not even for a frame', async ({ page, context, baseURL }) => {
   await interceptThirdParties(page);
   await context.addCookies([{ name: 'tarteaucitron', value: ALL_GRANTED, url: baseURL! }]);
+  // Checked right before every frame is painted: a banner inserted then removed within the same
+  // task (client-only apps read the cookie on mount) is never shown, so it does not count.
   await page.addInitScript(() => {
     window.__bannerSeen = false;
-    new MutationObserver(() => {
+    const check = () => {
       if (document.querySelector('[data-testid="banner"]')) window.__bannerSeen = true;
-    }).observe(document, { childList: true, subtree: true });
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
   });
   await page.goto('/');
   await expect(youtubeIframe(page, 'video-1')).toBeVisible();
