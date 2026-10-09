@@ -29,6 +29,20 @@ pnpm --filter example-vanilla dev
 pnpm --filter e2e test                   # browser tests (first time: pnpm --filter e2e exec playwright install chromium)
 ```
 
+## Getting started: `npx zeste init`
+
+```sh
+npx zeste init             # writes lib/consent.ts (in src/, Nuxt's app/ or the root)
+npx zeste init --dry-run   # report only
+```
+
+`zeste init` reads the project once and declares the services it already uses: a tarteaucitron configuration
+(`tarteaucitron.job`, `tarteaucitron.user.*`, cookie name and domain, Consent Mode), and the most common snippets
+pasted as is in pages (Google Analytics, Google Ads, Tag Manager, Matomo, Hotjar, Meta Pixel, Clarity, Google Maps,
+YouTube and Vimeo embeds). Its report lists, file and line, the scripts to remove (zeste loads them after consent),
+the embeds to put behind `<ConsentGate>`, and the options left to fill in. It does not try to recognize every third
+party: check the list, then add the missing services from the catalog.
+
 ## Usage with SvelteKit
 
 ```ts
