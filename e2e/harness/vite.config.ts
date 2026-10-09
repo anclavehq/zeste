@@ -8,6 +8,7 @@ export default defineConfig({
       input: {
         catalog: resolve(__dirname, 'catalog.html'),
         client: resolve(__dirname, 'client.html'),
+        i18n: resolve(__dirname, 'i18n.html'),
       },
     },
   },

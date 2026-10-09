@@ -9,7 +9,7 @@ export default defineConfig({
   projects: [
     {
       name: 'harness',
-      testMatch: /(catalog|client)\.spec\.ts/,
+      testMatch: /(catalog|client|i18n)\.spec\.ts/,
       use: { baseURL: 'http://localhost:4317' },
     },
     // The same app with each binding, with and without a server framework
