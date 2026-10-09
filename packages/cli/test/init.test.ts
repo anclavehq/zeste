@@ -1,6 +1,7 @@
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { runInNewContext } from 'node:vm';
 import { afterAll, describe, expect, it } from 'vitest';
 import { detect, init } from '../src/init.ts';
 
@@ -57,7 +58,7 @@ describe('zeste init, generated file', () => {
   it('runs: the declared services, with their options', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'zeste-init-'));
     cpSync(fixture, cwd, { recursive: true });
-    const result = init({ cwd });
+    const result = init({ cwd, format: 'module' });
     expect(result).toMatchObject({ file: 'lib/consent.ts', written: true });
     mkdirSync(out, { recursive: true });
     writeFileSync(join(out, 'consent.ts'), readFileSync(join(cwd, result.file), 'utf8'));
@@ -67,8 +68,22 @@ describe('zeste init, generated file', () => {
     expect(list.every((s: { needsConsent: boolean }) => s.needsConsent)).toBe(true);
   });
 
+  it('without a package.json: a zeste.config.js for the <script> version', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'zeste-init-'));
+    cpSync(fixture, cwd, { recursive: true });
+    const result = init({ cwd });
+    expect(result).toMatchObject({ file: 'zeste.config.js', written: true });
+    const window: { zesteConfig?: Record<string, unknown> } = {};
+    runInNewContext(readFileSync(join(cwd, 'zeste.config.js'), 'utf8'), { window });
+    expect(window.zesteConfig).toMatchObject({
+      services: { gtag: { gtagUa: 'G-ABC123XYZ' }, youtube: {}, matomocloud: { matomoId: 12 } },
+      cookieName: 'monsite_rgpd',
+      cookieDomain: '.monsite.fr',
+    });
+  });
+
   it('never overwrites an existing file without --force', () => {
-    const cwd = project({ 'src/lib/consent.ts': 'mine', 'src/app.html': '<iframe src="https://player.vimeo.com/video/1"></iframe>' });
+    const cwd = project({ 'package.json': '{}', 'src/lib/consent.ts': 'mine', 'src/app.html': '<iframe src="https://player.vimeo.com/video/1"></iframe>' });
     expect(init({ cwd }).written).toBe(false);
     expect(readFileSync(join(cwd, 'src/lib/consent.ts'), 'utf8')).toBe('mine');
     expect(init({ cwd, force: true }).written).toBe(true);

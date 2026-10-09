@@ -35,6 +35,11 @@ export interface InitOptions {
   force?: boolean;
   /** Only report, write nothing. */
   dryRun?: boolean;
+  /**
+   * `module`: a TypeScript module for the npm packages; `script`: a `window.zesteConfig` file for the
+   * `<script>` version. By default, `module` when the project has a package.json.
+   */
+  format?: 'module' | 'script';
 }
 
 export interface InitResult {
@@ -296,11 +301,36 @@ ${calls.join('\n')}
 `;
 }
 
+/** `window.zesteConfig` for the `<script>` version (@zeste/browser). */
+export function renderScript(detection: Omit<InitResult, 'file' | 'source' | 'written'>): string {
+  const entries = detection.services.map((s) => {
+    const options = [
+      ...Object.entries(s.options).map(([k, v]) => `${k}: ${quote(v)}`),
+      ...s.missing.map((k) => `${k}: 'TODO' /* required: not found in the project */`),
+    ];
+    const todo = s.code.map((k) => ` /* TODO: copy your tarteaucitron.user.${k} function as ${k} */`).join('');
+    return `    ${/^[a-z_$][\w$]*$/i.test(s.key) ? s.key : quote(s.key)}: { ${options.join(', ')} },${todo}`.replace('{  }', '{}');
+  });
+  const extra = [
+    detection.cookieName && `  cookieName: ${quote(detection.cookieName)},`,
+    detection.cookieDomain && `  cookieDomain: ${quote(detection.cookieDomain)},`,
+  ].filter(Boolean);
+  return `// The site's services, detected by \`zeste init\`: check them, then load this file before zeste.js:
+// <script src="/zeste.config.js"></script> <script src="/zeste/zeste.js"></script>
+window.zesteConfig = {
+  services: {
+${entries.join('\n')}
+  },
+${extra.length ? `${extra.join('\n')}\n` : ''}};
+`;
+}
+
 export function init(options: InitOptions): InitResult {
   const { cwd, force = false, dryRun = false } = options;
-  const file = options.out ?? join(sourceRoot(cwd), 'lib', 'consent.ts');
+  const format = options.format ?? (existsSync(join(cwd, 'package.json')) ? 'module' : 'script');
+  const file = options.out ?? (format === 'script' ? 'zeste.config.js' : join(sourceRoot(cwd), 'lib', 'consent.ts'));
   const detection = detect(cwd, file);
-  const source = render(detection.services);
+  const source = format === 'script' ? renderScript(detection) : render(detection.services);
   const target = join(cwd, file);
   const written = !dryRun && (force || !existsSync(target));
   if (written) {

@@ -6,12 +6,14 @@ import { init } from './init.ts';
 const HELP = `zeste — consent banner and preferences, ready to edit
 
 Usage:
-  npx zeste init [--out <file>] [--dry-run] [--force]
+  npx zeste init [--out <file>] [--format module|script] [--dry-run] [--force]
   npx zeste add [--framework svelte|react|vue] [--ui <lib>] [--style zeste|pelure] [--dir <folder>] [--force]
 
 init: finds the services the project already uses (a tarteaucitron configuration, analytics
 snippets and video embeds pasted in pages) and writes their declaration for zeste.
   --out        Output file (default: lib/consent.ts in src/, app/ (Nuxt) or the root)
+  --format     module: TypeScript for the npm packages (default with a package.json);
+               script: zeste.config.js for the <script> version (default without one)
   --dry-run    Print the report and the file, write nothing
 
 add: copies a banner, preferences and a placeholder written with your UI library.
@@ -70,6 +72,7 @@ const { values, positionals } = parseArgs({
     style: { type: 'string' },
     dir: { type: 'string' },
     out: { type: 'string' },
+    format: { type: 'string' },
     'dry-run': { type: 'boolean', default: false },
     force: { type: 'boolean', default: false },
     help: { type: 'boolean', short: 'h', default: false },
@@ -82,7 +85,11 @@ const isUi = (value: string): value is Ui => allUis.includes(value);
 const isStyle = (value: string): value is Style => (STYLES as readonly string[]).includes(value);
 
 if (positionals[0] === 'init' && !values.help) {
-  const result = init({ cwd: process.cwd(), out: values.out, force: values.force, dryRun: values['dry-run'] });
+  if (values.format !== undefined && values.format !== 'module' && values.format !== 'script') {
+    console.error('--format must be module or script');
+    process.exit(1);
+  }
+  const result = init({ cwd: process.cwd(), out: values.out, format: values.format, force: values.force, dryRun: values['dry-run'] });
   const at = (f: { file: string; line: number }) => `${f.file}:${f.line}`;
   if (!result.services.length) {
     console.log('No known service found in the project. Declare yours from the catalog: https://github.com/AmauriC/tarteaucitron.js');
@@ -110,7 +117,7 @@ if (positionals[0] === 'init' && !values.help) {
     console.log(`\n⚠ Your tarteaucitron cookie is shared with "${result.cookieDomain}": pass storage: cookieStorage({ domain: '${result.cookieDomain}' }) to createZeste().`);
   }
   if (values['dry-run']) console.log(`\n--- ${result.file}\n${result.source}`);
-  else if (result.written) console.log(`\n✔ ${result.file} written. Next: npx zeste add`);
+  else if (result.written) console.log(`\n✔ ${result.file} written.${result.file.endsWith('.js') ? '' : ' Next: npx zeste add'}`);
   else console.log(`\n= ${result.file} already exists (use --force to overwrite, or --dry-run to see the result)`);
   process.exit(0);
 }
