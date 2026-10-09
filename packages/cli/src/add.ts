@@ -138,6 +138,13 @@ function frameworkOf(ui: Ui | undefined): Framework | undefined {
   return matches.length === 1 ? matches[0] : undefined;
 }
 
+/** The project's source folder (`src`, Nuxt's `app`, or the root), whatever the framework. */
+export function sourceRoot(cwd: string): string {
+  const framework = detectFramework(cwd);
+  if (framework) return SETUP[framework].root(cwd);
+  return existsSync(join(cwd, 'src')) ? 'src' : '';
+}
+
 /** Guesses the project's UI lib: shadcn (components.json), then Ark UI, then Bits UI / Radix / Reka UI. */
 export function detectUi(cwd: string, framework: Framework): Ui | undefined {
   if (existsSync(join(cwd, 'components.json'))) return 'shadcn';

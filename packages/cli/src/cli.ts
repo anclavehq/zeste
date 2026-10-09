@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import { add, FRAMEWORKS, STYLES, UIS, type Framework, type Style, type Ui } from './add.ts';
+import { init } from './init.ts';
 
 const HELP = `zeste — consent banner and preferences, ready to edit
 
 Usage:
+  npx zeste init [--out <file>] [--dry-run] [--force]
   npx zeste add [--framework svelte|react|vue] [--ui <lib>] [--style zeste|pelure] [--dir <folder>] [--force]
 
-Options:
+init: finds the services the project already uses (a tarteaucitron configuration, analytics
+snippets and video embeds pasted in pages) and writes their declaration for zeste.
+  --out        Output file (default: lib/consent.ts in src/, app/ (Nuxt) or the root)
+  --dry-run    Print the report and the file, write nothing
+
+add: copies a banner, preferences and a placeholder written with your UI library.
   --framework  svelte, react or vue (auto-detected from package.json)
   --ui         UI library, auto-detected:
                  Svelte: shadcn (components.json), ark (@ark-ui/svelte), bits (bits-ui)
@@ -62,6 +69,8 @@ const { values, positionals } = parseArgs({
     ui: { type: 'string' },
     style: { type: 'string' },
     dir: { type: 'string' },
+    out: { type: 'string' },
+    'dry-run': { type: 'boolean', default: false },
     force: { type: 'boolean', default: false },
     help: { type: 'boolean', short: 'h', default: false },
   },
@@ -71,6 +80,40 @@ const isFramework = (value: string): value is Framework => (FRAMEWORKS as readon
 const allUis: readonly string[] = [...new Set(Object.values(UIS).flat())];
 const isUi = (value: string): value is Ui => allUis.includes(value);
 const isStyle = (value: string): value is Style => (STYLES as readonly string[]).includes(value);
+
+if (positionals[0] === 'init' && !values.help) {
+  const result = init({ cwd: process.cwd(), out: values.out, force: values.force, dryRun: values['dry-run'] });
+  const at = (f: { file: string; line: number }) => `${f.file}:${f.line}`;
+  if (!result.services.length) {
+    console.log('No known service found in the project. Declare yours from the catalog: https://github.com/AmauriC/tarteaucitron.js');
+  }
+  for (const s of result.services) {
+    const notes = [...s.missing.map((k) => `${k} to fill in`), ...s.code.map((k) => `${k} to copy`)];
+    console.log(`✔ ${s.name} (${s.exportName})${notes.length ? ` · ${notes.join(', ')}` : ''}  ← ${s.found.map(at).join(', ')}`);
+  }
+  for (const f of result.unknown) console.log(`? ${at(f)}  ${f.message}`);
+  if (result.remove.length) {
+    console.log('\nTo remove, zeste loads these services itself, after consent:');
+    for (const f of result.remove) console.log(`  ${at(f)}  ${f.message}`);
+  }
+  if (result.embeds.length) {
+    console.log('\nEmbeds that load before consent:');
+    for (const f of result.embeds) console.log(`  ${at(f)}  ${f.message}`);
+  }
+  if (result.cookieName) {
+    console.log(`\n⚠ Your tarteaucitron cookie is named "${result.cookieName}": pass storage: cookieStorage({ name: '${result.cookieName}' }) to createZeste() to keep your visitors' choices.`);
+  }
+  if (result.googleConsentMode) {
+    console.log('\n⚠ tarteaucitron had Google Consent Mode on: pass plugins: [googleConsentMode()] to createZeste().');
+  }
+  if (result.cookieDomain) {
+    console.log(`\n⚠ Your tarteaucitron cookie is shared with "${result.cookieDomain}": pass storage: cookieStorage({ domain: '${result.cookieDomain}' }) to createZeste().`);
+  }
+  if (values['dry-run']) console.log(`\n--- ${result.file}\n${result.source}`);
+  else if (result.written) console.log(`\n✔ ${result.file} written. Next: npx zeste add`);
+  else console.log(`\n= ${result.file} already exists (use --force to overwrite, or --dry-run to see the result)`);
+  process.exit(0);
+}
 
 if (values.help || positionals[0] !== 'add') {
   console.log(HELP);
