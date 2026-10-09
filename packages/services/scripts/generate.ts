@@ -227,6 +227,20 @@ writeFileSync(
   header + entries.map((e) => `export { ${e.exportName} } from './services/${e.key}.ts';`).join('\n') + '\n',
 );
 
+// One loader per service, for pages that only know their services at runtime (the <script> version):
+// each service is a separate chunk, downloaded only if the site declares it.
+writeFileSync(
+  join(out, 'loaders.ts'),
+  `${header}import type { ServiceDefinition } from '@zeste/core';
+
+type Factory = (options?: any) => ServiceDefinition;
+
+export const loaders: Record<string, () => Promise<Factory>> = {
+${entries.map((e) => `  ${JSON.stringify(e.key)}: () => import('./services/${e.key}.ts').then((m) => m.${e.exportName} as Factory),`).join('\n')}
+};
+`,
+);
+
 rmSync(join(out, 'catalog.json'), { force: true });
 const catalog = entries.map(
   ({ key, exportName, name, type, uri, needConsent, userKeys, requiredKeys, optionTypes, deps, embed, hasFallback, preConsentRequests, embedClasses }) => ({
