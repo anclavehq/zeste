@@ -79,6 +79,25 @@ export interface ConsentPlugin {
 
 export type Listener = (snapshot: ConsentSnapshot) => void;
 
+/** What a visitor did: one of the banner buttons, the preferences, or a single service (placeholder). */
+export type ConsentRecordAction = 'acceptAll' | 'denyAll' | 'set' | 'grant' | 'deny' | 'category';
+
+/**
+ * One choice made by the visitor, passed to `onRecord`: what the site needs to prove consent
+ * (GDPR art. 7). Contains no personal data; sending and keeping it is up to the site.
+ */
+export interface ConsentRecord {
+  /** Random identifier of this browser's consent, kept in the cookie: the same across later changes. */
+  id: string;
+  /** When the choice was made (ISO 8601). */
+  date: string;
+  action: ConsentRecordAction;
+  /** State of every service that needs consent, after the choice: `true` accepted, `false` refused. */
+  choices: Record<string, boolean>;
+  /** The `policyVersion` the visitor answered, if the site uses one. */
+  policyVersion?: string;
+}
+
 export interface ConsentManager {
   getSnapshot(): ConsentSnapshot;
   /**

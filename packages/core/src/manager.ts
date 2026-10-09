@@ -1,6 +1,8 @@
 import { cookieStorage, purgeCookie } from './storage.ts';
 import type {
   ConsentManager,
+  ConsentRecord,
+  ConsentRecordAction,
   ConsentPlugin,
   ConsentSnapshot,
   ConsentStatus,
@@ -10,6 +12,7 @@ import type {
 } from './types.ts';
 
 const VERSION_KEY = '_v';
+const ID_KEY = '_id';
 
 export interface ConsentOptions {
   services: ServiceDefinition[];
@@ -37,6 +40,12 @@ export interface ConsentOptions {
    * outside zeste. Contains only what the banner already displays. Enabled by default.
    */
   expose?: boolean;
+  /**
+   * Called after every choice the visitor makes, with what proves it (date, services, policy version and a
+   * random identifier kept in the cookie). Send it to your server to keep a consent log, e.g. with
+   * `navigator.sendBeacon('/consent', JSON.stringify(record))`. Not called when the stored choice is read back.
+   */
+  onRecord?: (record: ConsentRecord) => void;
 }
 
 /** What `window.__zesteManifest` publishes: one manifest per zeste instance on the page. */
@@ -52,6 +61,7 @@ export function createConsent(options: ConsentOptions): ConsentManager {
   const queues = new Map<string, Promise<void>>();
   const teardowns: Array<() => void> = [];
   let status: Record<string, ConsentStatus> = readStatus(options.initial ?? {});
+  let consentId: string | undefined = options.initial?.[ID_KEY];
   let needsReload = false;
   let started = false;
   let snapshot = buildSnapshot();
@@ -101,6 +111,7 @@ export function createConsent(options: ConsentOptions): ConsentManager {
       if (value !== 'unknown') values[key] = String(value === 'granted');
     }
     if (options.policyVersion !== undefined) values[VERSION_KEY] = options.policyVersion;
+    if (consentId) values[ID_KEY] = consentId;
     storage.write(values);
   }
 
@@ -139,7 +150,20 @@ export function createConsent(options: ConsentOptions): ConsentManager {
     }
   }
 
-  function apply(changes: Record<string, boolean>) {
+  function record(action: ConsentRecordAction) {
+    if (!options.onRecord || !consentId) return;
+    const choices: Record<string, boolean> = {};
+    for (const [key, value] of Object.entries(status)) {
+      if (services.get(key)?.needsConsent && value !== 'unknown') choices[key] = value === 'granted';
+    }
+    try {
+      options.onRecord({ id: consentId, date: new Date().toISOString(), action, choices, policyVersion: options.policyVersion });
+    } catch (error) {
+      console.error('[zeste] onRecord failed', error);
+    }
+  }
+
+  function apply(changes: Record<string, boolean>, action: ConsentRecordAction = 'set') {
     let changed = false;
     const toRun: ServiceDefinition[] = [];
     for (const [key, granted] of Object.entries(changes)) {
@@ -163,15 +187,17 @@ export function createConsent(options: ConsentOptions): ConsentManager {
       }
     }
     if (!changed) return;
+    consentId ??= newId();
     persist();
     if (started) toRun.forEach(run);
     emit();
+    record(action);
   }
 
-  function each(predicate: (s: ServiceDefinition) => boolean, granted: boolean) {
+  function each(predicate: (s: ServiceDefinition) => boolean, granted: boolean, action: ConsentRecordAction) {
     const changes: Record<string, boolean> = {};
     for (const s of services.values()) if (predicate(s)) changes[s.key] = granted;
-    apply(changes);
+    apply(changes, action);
   }
 
   function onClick(event: Event) {
@@ -188,17 +214,19 @@ export function createConsent(options: ConsentOptions): ConsentManager {
       return () => listeners.delete(listener);
     },
     has: (key) => status[key] === 'granted',
-    grant: (key) => apply({ [key]: true }),
-    deny: (key) => apply({ [key]: false }),
-    grantAll: () => each(() => true, true),
-    denyAll: () => each(() => true, false),
-    setCategory: (category, granted) => each((s) => s.category === category, granted),
-    set: apply,
+    grant: (key) => apply({ [key]: true }, 'grant'),
+    deny: (key) => apply({ [key]: false }, 'deny'),
+    grantAll: () => each(() => true, true, 'acceptAll'),
+    denyAll: () => each(() => true, false, 'denyAll'),
+    setCategory: (category, granted) => each((s) => s.category === category, granted, 'category'),
+    set: (choices) => apply(choices, 'set'),
     start() {
       if (started || typeof window === 'undefined') return;
       started = true;
       if (!options.initial) {
-        status = readStatus(storage.read());
+        const stored = storage.read();
+        status = readStatus(stored);
+        consentId ??= stored[ID_KEY];
         emit();
       }
       for (const plugin of options.plugins ?? []) {
@@ -243,6 +271,13 @@ export function createConsent(options: ConsentOptions): ConsentManager {
   };
 
   return manager;
+}
+
+/** 128 random bits in hex: identifies a consent, not a person. */
+function newId(): string {
+  const bytes = new Uint8Array(16);
+  globalThis.crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 function dispatch(name: string) {
