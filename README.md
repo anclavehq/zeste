@@ -247,6 +247,26 @@ attach the zeste actions to your own buttons.
 </MyDialog>
 ```
 
+## Proof of consent
+
+The GDPR (art. 7) requires being able to show that a visitor consented. `onRecord` is called after every choice
+with what proves it; sending and keeping it is up to the site:
+
+```ts
+createZeste({
+  services,
+  policyVersion: '2026-10',
+  onRecord: (record) => navigator.sendBeacon('/consent', JSON.stringify(record)),
+});
+// { id: '9f2c…', date: '2026-10-09T14:03:12.000Z', action: 'denyAll',
+//   choices: { gtag: false, youtube: false }, policyVersion: '2026-10' }
+```
+
+`id` is random and kept in the consent cookie: it identifies the choices of a browser across changes, not a
+person. `action` says how the choice was made (`acceptAll`, `denyAll`, `set` from the preferences, `grant` from a
+placeholder…). Reading a stored choice back is not a new choice and is not reported. The same option exists in
+`window.zesteConfig` for the `<script>` version.
+
 ## Compliance guard (dev mode)
 
 Consent rules across the EU (ePrivacy Directive art. 5(3), GDPR, and the EDPB guidance on cookie banners) boil down to
