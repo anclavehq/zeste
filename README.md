@@ -140,6 +140,24 @@ In a child component, `useZeste<Messages>()` returns the same object, reactive. 
 `v-bind="zeste.actions.denyAll"`, a dialog with `v-model:open="zeste.preferencesOpen"` and a switch with
 `v-model="zeste.draft[key]"`. With Nuxt, add the zeste packages to `build.transpile`.
 
+## Language
+
+The texts exist in the 36 tarteaucitron languages. `@zeste/services/i18n` picks one and loads only that one:
+
+```ts
+import { acceptedLanguages, detectLanguage, loadMessages, pickLanguage } from '@zeste/services/i18n';
+
+// Browser only (no server rendering): the page language (<html lang>), then the browser's, English otherwise
+const messages = await loadMessages(detectLanguage());
+
+// With server rendering, choose on the server and pass the texts to the page, like the consent cookie
+// (SvelteKit `load`, Next.js server component props, Nuxt `useAsyncData`):
+const language = pickLanguage([pageLanguage, ...acceptedLanguages(request.headers.get('accept-language'))]);
+const messages = await loadMessages(language);
+```
+
+A site in a single language can keep importing it directly: `import { messages } from '@zeste/services/i18n/fr'`.
+
 ## With your UI library: `npx zeste add`
 
 zeste is headless: it works with any UI, including your own components (see the end of this section).
