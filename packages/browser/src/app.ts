@@ -77,6 +77,7 @@ async function start() {
     }),
     policyVersion: config.policyVersion,
     allowPreConsentRequests: config.allowPreConsentRequests,
+    onRecord: config.onRecord,
     plugins: (config.googleConsentMode ?? param<boolean>('googleConsentMode') ?? true) ? [googleConsentMode()] : [],
   });
 

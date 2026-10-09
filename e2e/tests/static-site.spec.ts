@@ -146,6 +146,34 @@ test('withdrawal from the reopen button: the video becomes a placeholder again, 
   await expect(page.getByRole('status').getByRole('button', { name: 'Recharger la page' })).toBeVisible();
 });
 
+test('consent log: every choice is sent with its identifier, also kept in the cookie', async ({ page, context }) => {
+  await interceptThirdParties(page);
+  const records: Array<{ id: string; action: string; choices: Record<string, boolean>; date: string }> = [];
+  await page.route('**/consent', (route) => {
+    records.push(JSON.parse(route.request().postData()!));
+    return route.fulfill({ status: 204 });
+  });
+  await open(page);
+  await expect(banner(page)).toBeVisible();
+  expect(records).toEqual([]); // nothing before a choice
+
+  await page.getByRole('button', { name: 'Autoriser YouTube' }).click();
+  await banner(page).getByRole('button', { name: 'Tout refuser' }).click();
+  await expect.poll(() => records.length).toBe(2);
+  expect(records.map((r) => [r.action, r.choices])).toEqual([
+    ['grant', { youtube: true }],
+    ['denyAll', { gtag: false, youtube: false, matomocloud: false }],
+  ]);
+  expect(records[0]!.id).toBe(records[1]!.id);
+  const cookie = (await context.cookies()).find((c) => c.name === 'tarteaucitron');
+  expect(decodeURIComponent(cookie!.value)).toContain(`_id=${records[0]!.id}`);
+
+  // Reading the choice back on the next page is not a new choice
+  await open(page);
+  await page.waitForTimeout(300);
+  expect(records).toHaveLength(2);
+});
+
 test('an address ending in #zeste opens the preferences', async ({ page }) => {
   await interceptThirdParties(page);
   await open(page, '/#zeste');

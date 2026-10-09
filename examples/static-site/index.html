@@ -17,6 +17,8 @@
         style: demo.get('style') ?? 'zeste',
         theme: demo.get('theme') ?? 'site',
         guard: true,
+        // Consent log: every choice goes to the site's server, which keeps it as proof.
+        onRecord: (record) => navigator.sendBeacon('/consent', JSON.stringify(record)),
       };
     </script>
     <script src="/zeste.js"></script>

@@ -1,3 +1,5 @@
+import type { ConsentRecord } from '@zeste/core';
+
 /** What a page declares in `window.zesteConfig`, before the zeste script. */
 export interface ZesteConfig {
   /** Services by catalog key, with their options: `{ gtag: { gtagUa: 'G-…' }, youtube: {} }`. */
@@ -32,6 +34,11 @@ export interface ZesteConfig {
   allowPreConsentRequests?: boolean | string[];
   /** Console warnings when the banner breaks a measurable consent rule. */
   guard?: boolean;
+  /**
+   * Called after every choice, with what proves it (date, services, policy version, random identifier).
+   * E.g. `onRecord: (record) => navigator.sendBeacon('/consent', JSON.stringify(record))`.
+   */
+  onRecord?: (record: ConsentRecord) => void;
 }
 
 declare global {
