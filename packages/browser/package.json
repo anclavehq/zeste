@@ -1,0 +1,22 @@
+{
+  "name": "@zeste/browser",
+  "version": "0.0.0",
+  "description": "zeste as a <script> tag, for sites without a JavaScript framework: consent engine, the tarteaucitron catalog and a ready-made banner. Drop-in replacement for tarteaucitron.js",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && vite build --config vite.loader.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@zeste/core": "workspace:*",
+    "@zeste/services": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vite": "^8.3.0"
+  }
+}
