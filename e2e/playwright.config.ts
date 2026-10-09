@@ -73,6 +73,12 @@ export default defineConfig({
         })),
       ),
     ),
+    // zeste as a <script> tag on a site without a framework (@zeste/browser)
+    {
+      name: 'static-site',
+      testMatch: /static-site\.spec\.ts/,
+      use: { baseURL: 'http://localhost:4334' },
+    },
     // Existing site migrated from tarteaucitron, with its own design system (Ark UI)
     {
       name: 'existing-site',
@@ -125,6 +131,11 @@ export default defineConfig({
       url: `http://localhost:${port}/`,
       reuseExistingServer: true,
     })),
+    {
+      command: 'pnpm --dir ../examples/static-site exec vite preview --port 4334 --strictPort',
+      url: 'http://localhost:4334/',
+      reuseExistingServer: true,
+    },
     ...[
       ['svelte-spa', '4324'],
       ['react-spa', '4325'],
