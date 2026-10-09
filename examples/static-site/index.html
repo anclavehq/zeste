@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maison exemple</title>
+    <script>
+      // Demo only: ?style=pelure and ?theme=dark switch the look.
+      const demo = new URLSearchParams(location.search);
+      window.zesteConfig = {
+        services: {
+          gtag: { gtagUa: 'G-TEST000000' },
+          youtube: {},
+          matomocloud: { matomoId: 1, matomoHost: 'https://zeste-e2e.invalid/' },
+        },
+        privacyUrl: '/confidentialite',
+        style: demo.get('style') ?? 'zeste',
+        theme: demo.get('theme') ?? 'site',
+        guard: true,
+      };
+    </script>
+    <script src="/zeste.js"></script>
+    <style>
+      body { margin: 0; font-family: Georgia, serif; color: #222; background: #fff; }
+      header, main, footer { padding: 1rem 1.5rem; }
+      header { display: flex; gap: 1rem; border-bottom: 1px solid #ddd; }
+      footer { border-top: 1px solid #ddd; margin-bottom: 8rem; }
+      .youtube_player { width: 560px; max-width: 100%; }
+    </style>
+  </head>
+  <body>
+    <header><a href="/">Accueil</a><a href="/tarteaucitron.html">Ancienne config</a></header>
+    <main>
+      <h1>Maison exemple</h1>
+      <p>Un site sans framework JavaScript : HTML, un peu de CSS, et zeste.</p>
+      <!-- tarteaucitron markup: unchanged -->
+      <div class="youtube_player" data-testid="video-1" videoID="dQw4w9WgXcQ" width="560" height="315"></div>
+    </main>
+    <footer><a href="#zeste">Gestion des cookies</a></footer>
+  </body>
+</html>

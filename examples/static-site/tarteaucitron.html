@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maison exemple, ancienne config</title>
+    <!-- Was: <script src="/tarteaucitron/tarteaucitron.js"></script>. The configuration below is untouched. -->
+    <script src="/zeste.js"></script>
+    <script>
+      tarteaucitron.init({
+        "privacyUrl": "/confidentialite",
+        "hashtag": "#tarteaucitron",
+        "cookieName": "monsite_rgpd",
+        "orientation": "middle",
+        "showIcon": true,
+        "highPrivacy": true,
+        "googleConsentMode": true
+      });
+      tarteaucitron.user.gtagUa = 'G-LEGACY0000';
+      (tarteaucitron.job = tarteaucitron.job || []).push('gtag');
+      (tarteaucitron.job = tarteaucitron.job || []).push('youtube');
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Ancienne config tarteaucitron</h1>
+      <div class="youtube_player" data-testid="video-1" videoID="dQw4w9WgXcQ" width="560" height="315"></div>
+      <p><a href="#tarteaucitron">Gestion des cookies</a></p>
+    </main>
+  </body>
+</html>
