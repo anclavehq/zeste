@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+/** One skin per framework runs the compliance guard cases: the guard lives in the engine, not in the skins. */
+const GUARD_LIBS: string[] = ['skin-bits', 'skin-react-radix', 'skin-vue-reka'];
+
 export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,
@@ -46,6 +49,11 @@ export default defineConfig({
         (['light', 'dark'] as const).map((theme) => ({
           name: [name, style === 'pelure' && 'pelure', theme === 'dark' && 'dark'].filter(Boolean).join('-'),
           testMatch: /skins\.spec\.ts/,
+          // Behaviour once per lib (default look); the broken-banner guard cases once per framework.
+          grepInvert: [
+            ...(style === 'zeste' && theme === 'light' ? [] : [/@behaviour/]),
+            ...(style === 'zeste' && theme === 'light' && GUARD_LIBS.includes(name) ? [] : [/@guard/]),
+          ],
           // Pelure (except shadcn) deliberately keeps the same flat color in dark mode; the rest adapts.
           metadata: { theme, adaptsToDark: !(style === 'pelure' && !name.endsWith('shadcn')) },
           use: {

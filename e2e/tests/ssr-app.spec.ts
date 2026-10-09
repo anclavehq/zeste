@@ -229,19 +229,6 @@ test.describe('compliance guard', () => {
     await expect.poll(() => warnings.join('\n')).toContain('much smaller than "Accept all"');
   });
 
-  test('banner without "Tout refuser" → warning', async ({ page }) => {
-    await interceptThirdParties(page);
-    const warnings = complianceWarnings(page);
-    // Removed from the server HTML or before the first render, as a careless developer would.
-    await page.addInitScript(() => {
-      new MutationObserver(() => {
-        document.querySelector('[data-testid="banner"] [data-zeste-action="denyAll"]')?.remove();
-      }).observe(document, { childList: true, subtree: true });
-    });
-    await page.goto('/');
-    await expect.poll(() => warnings.join('\n')).toContain('no "Deny all" button');
-  });
-
   test('no way left to reopen the preferences → warning', async ({ page }) => {
     await interceptThirdParties(page);
     const warnings = complianceWarnings(page);
