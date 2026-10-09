@@ -330,6 +330,29 @@ export const categories = messages.categories;
   );
 }
 
+languages.sort();
+writeFileSync(
+  join(out, 'i18n', 'index.ts'),
+  `${header}import type { Messages } from './types.ts';
+
+export type { CategoryLabel, Messages } from './types.ts';
+export { acceptedLanguages, detectLanguage, pickLanguage } from '../language.ts';
+
+/** Languages with UI texts (tarteaucitron codes: \`cn\` and \`zh\` are both Chinese, \`se\` is Swedish). */
+export const languages = ${JSON.stringify(languages)} as const;
+export type Language = (typeof languages)[number];
+
+const loaders: Record<Language, () => Promise<{ messages: Messages }>> = {
+${languages.map((l) => `  ${l}: () => import('./${l}.ts'),`).join('\n')}
+};
+
+/** Loads the texts of one language: each language is a separate chunk, downloaded only when used. */
+export async function loadMessages(language: Language): Promise<Messages> {
+  return (await loaders[language]()).messages;
+}
+`,
+);
+
 const dynamic = entries.filter((e) => e.cookies.startsWith('function'));
 // Untyped original code: isolated in a file without type checking.
 writeFileSync(
