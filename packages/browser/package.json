@@ -1,6 +1,6 @@
 {
   "name": "@zeste/browser",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "zeste as a <script> tag, for sites without a JavaScript framework: consent engine, the tarteaucitron catalog and a ready-made banner. Drop-in replacement for tarteaucitron.js",
   "type": "module",
   "license": "MIT",

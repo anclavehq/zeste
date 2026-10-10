@@ -1,6 +1,6 @@
 {
   "name": "@zeste/vue",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Vue 3 bindings for zeste: reactive consent state, headless components, SSR-ready (Nuxt)",
   "type": "module",
   "license": "MIT",

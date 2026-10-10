@@ -1,6 +1,6 @@
 {
   "name": "@zeste/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Headless, framework-agnostic cookie consent engine, compatible with the tarteaucitron.js service catalog",
   "type": "module",
   "license": "MIT",

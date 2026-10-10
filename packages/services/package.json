@@ -1,6 +1,6 @@
 {
   "name": "@zeste/services",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "tarteaucitron.js service catalog, split into one lazily-loaded module per service",
   "type": "module",
   "license": "MIT",
