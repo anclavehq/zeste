@@ -25,7 +25,7 @@
 
 ```sh
 pnpm install
-pnpm test
+pnpm test                                # unit tests
 pnpm --filter @zeste/services generate   # regenerates the catalog from tarteaucitronjs
 pnpm --filter example-vanilla dev
 pnpm --filter e2e test                   # browser tests (first time: pnpm --filter e2e exec playwright install chromium)

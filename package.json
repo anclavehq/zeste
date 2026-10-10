@@ -2,8 +2,12 @@
   "name": "zeste-monorepo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.0.8",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "test": "pnpm -r test",
+    "test": "pnpm -r --filter '!e2e' test",
     "typecheck": "pnpm -r typecheck"
   }
 }

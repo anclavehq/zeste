@@ -1,0 +1,11 @@
+name: Feature request
+description: A new option, framework, UI library or language
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What you need
+      description: The problem first, then the solution you have in mind.
+    validations:
+      required: true

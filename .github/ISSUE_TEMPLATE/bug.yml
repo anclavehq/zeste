@@ -1,0 +1,30 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, what you expected, what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest configuration or repository that shows it. A link to a public page helps.
+    validations:
+      required: true
+  - type: input
+    id: packages
+    attributes:
+      label: Packages and versions
+      placeholder: "@zeste/svelte 0.1.0, svelte 5.40, SvelteKit 2"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Chrome 140, Safari 26…
