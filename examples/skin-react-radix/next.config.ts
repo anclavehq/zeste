@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const config: NextConfig = {
-  // The zeste packages are published as TypeScript sources.
+  // Inside this monorepo the zeste packages are TypeScript sources (the published ones are compiled).
   transpilePackages: ['@zeste/core', '@zeste/services', '@zeste/react'],
 };
 

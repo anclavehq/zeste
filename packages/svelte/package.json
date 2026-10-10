@@ -4,6 +4,27 @@
   "description": "Svelte 5 bindings for zeste: reactive consent state, headless components, SSR-ready",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/svelte"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode",
+    "svelte",
+    "sveltekit"
+  ],
   "sideEffects": false,
   "svelte": "./src/index.ts",
   "exports": {
@@ -14,7 +35,9 @@
     }
   },
   "scripts": {
-    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+    "build": "node ../../scripts/build-package.ts --svelte",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@zeste/core": "workspace:*",
@@ -24,8 +47,22 @@
     "svelte": "^5.40.0"
   },
   "devDependencies": {
+    "@sveltejs/package": "^3.0.0",
     "svelte": "^5.57.0",
     "svelte-check": "^4.6.0",
     "typescript": "^5.9.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "svelte": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "svelte": "./dist/index.js"
   }
 }

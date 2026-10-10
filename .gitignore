@@ -7,3 +7,4 @@ e2e/dist
 examples/*/build
 .svelte-kit
 examples/playground/dist
+*.tgz

@@ -4,13 +4,34 @@
   "description": "Headless, framework-agnostic cookie consent engine, compatible with the tarteaucitron.js service catalog",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./tarteaucitron": "./src/compat/tarteaucitron.ts"
   },
   "scripts": {
+    "build": "node ../../scripts/build-package.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "peerDependencies": {
     "tarteaucitronjs": "^1.35.0"
@@ -26,5 +47,20 @@
     "tarteaucitronjs": "1.35.1",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./tarteaucitron": {
+        "types": "./dist/compat/tarteaucitron.d.ts",
+        "default": "./dist/compat/tarteaucitron.js"
+      }
+    }
   }
 }

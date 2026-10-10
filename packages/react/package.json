@@ -4,6 +4,27 @@
   "description": "React bindings for zeste: consent state hook, headless components, SSR-ready (Next.js App Router)",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode",
+    "react",
+    "nextjs"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
@@ -12,8 +33,10 @@
     }
   },
   "scripts": {
+    "build": "node ../../scripts/build-package.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@zeste/core": "workspace:*"
@@ -26,5 +49,16 @@
     "react": "^19.2.0",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   }
 }

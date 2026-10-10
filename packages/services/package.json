@@ -4,6 +4,25 @@
   "description": "tarteaucitron.js service catalog, split into one lazily-loaded module per service",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/services"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
@@ -14,9 +33,11 @@
     "./i18n/*": "./src/i18n/*.ts"
   },
   "scripts": {
+    "build": "node ../../scripts/build-package.ts",
     "generate": "node scripts/generate.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@zeste/core": "workspace:*"
@@ -29,5 +50,36 @@
     "tarteaucitronjs": "1.35.1",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./catalog": {
+        "types": "./dist/catalog.d.ts",
+        "default": "./dist/catalog.js"
+      },
+      "./loaders": {
+        "types": "./dist/loaders.d.ts",
+        "default": "./dist/loaders.js"
+      },
+      "./i18n": {
+        "types": "./dist/i18n/index.d.ts",
+        "default": "./dist/i18n/index.js"
+      },
+      "./*": {
+        "types": "./dist/services/*.d.ts",
+        "default": "./dist/services/*.js"
+      },
+      "./i18n/*": {
+        "types": "./dist/i18n/*.d.ts",
+        "default": "./dist/i18n/*.js"
+      }
+    }
   }
 }

@@ -4,16 +4,38 @@
   "description": "zeste CLI: detects a project's services and copies an editable consent banner, preferences and placeholder into your project. Ready-made for Svelte, React and Vue with Bits UI, Radix, Reka UI, Ark UI and shadcn; zeste itself works with any UI",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode",
+    "cli"
+  ],
   "bin": {
     "zeste": "./src/cli.ts"
   },
   "files": [
-    "src",
+    "dist",
     "templates"
   ],
   "scripts": {
+    "build": "node ../../scripts/build-package.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
@@ -22,5 +44,10 @@
   },
   "dependencies": {
     "@zeste/services": "workspace:*"
+  },
+  "publishConfig": {
+    "bin": {
+      "zeste": "./dist/cli.js"
+    }
   }
 }

@@ -4,6 +4,27 @@
   "description": "Vue 3 bindings for zeste: reactive consent state, headless components, SSR-ready (Nuxt)",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/vue"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode",
+    "vue",
+    "nuxt"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
@@ -12,8 +33,10 @@
     }
   },
   "scripts": {
+    "build": "node ../../scripts/build-package.ts",
     "test": "vitest run",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@zeste/core": "workspace:*",
@@ -27,5 +50,16 @@
     "vitest": "^4.0.0",
     "vue": "^3.5.0",
     "vue-tsc": "^3.3.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   }
 }

@@ -4,12 +4,33 @@
   "description": "zeste as a <script> tag, for sites without a JavaScript framework: consent engine, the tarteaucitron catalog and a ready-made banner. Drop-in replacement for tarteaucitron.js",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anclavehq/zeste.git",
+    "directory": "packages/browser"
+  },
+  "homepage": "https://anclavehq.github.io/zeste/",
+  "bugs": "https://github.com/anclavehq/zeste/issues",
+  "keywords": [
+    "cookie consent",
+    "cookie banner",
+    "gdpr",
+    "rgpd",
+    "ePrivacy",
+    "consent management",
+    "cmp",
+    "tarteaucitron",
+    "headless",
+    "google consent mode",
+    "wordpress"
+  ],
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "vite build && vite build --config vite.loader.config.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@zeste/core": "workspace:*",
@@ -18,5 +39,11 @@
   "devDependencies": {
     "typescript": "^5.9.0",
     "vite": "^8.3.0"
+  },
+  "unpkg": "./dist/zeste.js",
+  "jsdelivr": "./dist/zeste.js",
+  "exports": {
+    "./zeste.js": "./dist/zeste.js",
+    "./package.json": "./package.json"
   }
 }

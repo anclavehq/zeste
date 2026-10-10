@@ -151,8 +151,7 @@ export function Consent({ initial, children }) {
 In a child component, `useZeste<Messages>()` returns the same object as in Svelte and re-renders on every change.
 The differences: actions are props to spread (`{...zeste.actions.denyAll}`), the draft is edited with
 `zeste.setDraft(key, checked)`, and a controlled dialog uses `open={zeste.preferencesOpen}
-onOpenChange={zeste.setPreferencesOpen}`. With Next.js, add the zeste packages to `transpilePackages`
-(they ship as TypeScript sources).
+onOpenChange={zeste.setPreferencesOpen}`.
 
 ## Usage with Nuxt (Vue)
 
@@ -185,7 +184,7 @@ const zeste = createZeste({ services: [gtag({ gtagUa: 'G-XXX' }), youtube()], in
 
 In a child component, `useZeste<Messages>()` returns the same object, reactive. Actions bind with
 `v-bind="zeste.actions.denyAll"`, a dialog with `v-model:open="zeste.preferencesOpen"` and a switch with
-`v-model="zeste.draft[key]"`. With Nuxt, add the zeste packages to `build.transpile`.
+`v-model="zeste.draft[key]"`.
 
 ## Language
 
