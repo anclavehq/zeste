@@ -200,23 +200,19 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
           </svg>
         </div></div>
         <div class="hero-copy">
-          <span class="eyebrow">{t.hero.eyebrow}</span>
-          <h1 id="titre" set:html={t.hero.title} />
+          <h1 id="titre">{t.hero.title}</h1>
           <p class="lead" set:html={t.hero.lead} />
+          <p class="lead">{t.hero.facts}</p>
           <div class="cmd"><code>npx zeste init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
         </div>
         <figure class="frame hero-video">
           <video src={asset('media/zeste-presentation.mp4')} poster={asset('media/zeste-presentation.jpg')} controls preload="metadata" playsinline aria-label={t.hero.video}></video>
           {t.hero.videoNote && <figcaption>{t.hero.videoNote}</figcaption>}
         </figure>
-        <div class="stats">
-          {t.hero.stats.map(([n, label]) => <div><strong>{n}</strong><span>{label}</span></div>)}
-        </div>
       </section>
 
       <section class="section" id={ids.why} aria-labelledby="t-why">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.why.eyebrow}</span>
           <h2 id="t-why">{t.why.title}</h2>
           <p class="soft" set:html={t.why.text} />
         </div>
@@ -237,7 +233,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" aria-labelledby="t-principles">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.principles.eyebrow}</span>
           <h2 id="t-principles">{t.principles.title}</h2>
         </div>
         <div class="pillars">
@@ -264,7 +259,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" id={ids.start} aria-labelledby="t-start">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.start.eyebrow}</span>
           <h2 id="t-start">{t.start.title}</h2>
           <div class="fw-pick"><span id="fw-label">{t.start.pick}</span>
             <div class="seg fw-seg" role="group" aria-labelledby="fw-label">
@@ -306,7 +300,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" id={ids.try} aria-labelledby="t-try">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.try.eyebrow}</span>
           <h2 id="t-try">{t.try.title}</h2>
           <p class="soft" set:html={t.try.text} />
         </div>
@@ -353,7 +346,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
       <section class="section" aria-labelledby="t-gate">
         <div class="split">
           <div class="stack">
-            <span class="eyebrow">{t.gate.eyebrow}</span>
             <h2 id="t-gate">{t.gate.title}</h2>
             <p class="soft" set:html={t.gate.text} />
           </div>
@@ -368,7 +360,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" id={ids.compliance} aria-labelledby="t-compliance">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.compliance.eyebrow}</span>
           <h2 id="t-compliance">{t.compliance.title}</h2>
         </div>
         <div class="split">
@@ -392,7 +383,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" id={ids.migrate} aria-labelledby="t-migrate">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.migrate.eyebrow}</span>
           <h2 id="t-migrate">{t.migrate.title}</h2>
           <p class="soft">{t.migrate.text}</p>
           <p class="soft" set:html={t.migrate.text2} />
@@ -413,7 +403,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" aria-labelledby="t-tests">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.tests.eyebrow}</span>
           <h2 id="t-tests">{t.tests.title}</h2>
           <p class="soft">{t.tests.text}</p>
         </div>
@@ -429,8 +418,8 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" aria-labelledby="t-state">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.state.eyebrow}</span>
           <h2 id="t-state">{t.state.title}</h2>
+          <p class="soft">{t.state.text}</p>
         </div>
         <div class="state reveal">
           <div class="stack">
@@ -446,7 +435,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
 
       <section class="section" id={ids.faq} aria-labelledby="t-faq">
         <div class="section-head reveal">
-          <span class="eyebrow">{t.faq.eyebrow}</span>
           <h2 id="t-faq">{t.faq.title}</h2>
         </div>
         <div class="faq">
@@ -457,7 +445,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
       <footer>
         <span set:html={t.footer.about} />
         <span>{t.footer.credits}</span>
-        <span><a href={docs}>{t.nav.docs}</a> · <a href="https://github.com/anclavehq/zeste">GitHub</a> · <a href="https://github.com/anclavehq/zeste/blob/main/LICENSE">{t.footer.license}</a></span>
+        <nav class="footer-links" aria-label="zeste"><a href={docs}>{t.nav.docs}</a><a href="https://github.com/anclavehq/zeste">GitHub</a><a href="https://github.com/anclavehq/zeste/blob/main/LICENSE">{t.footer.license}</a></nav>
       </footer>
     </main>
 
@@ -598,23 +586,6 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
       const compare = document.getElementById('compare');
       const range = document.getElementById('compare-range');
       range.addEventListener('input', () => compare.style.setProperty('--pos', range.value + '%'));
-
-      // Key figures count up to their value (already shown without JS)
-      if (!reduce) {
-        document.querySelectorAll('.stats strong').forEach((el, i) => {
-          const target = Number(el.textContent);
-          if (!target) return;
-          const start = performance.now() + 600 + i * 90;
-          const dur = 1100;
-          const tick = (now) => {
-            const k = Math.min(1, Math.max(0, (now - start) / dur));
-            el.textContent = String(Math.round(target * (1 - Math.pow(1 - k, 3))));
-            if (k < 1) requestAnimationFrame(tick);
-          };
-          el.textContent = '0';
-          requestAnimationFrame(tick);
-        });
-      }
     </script>
   </body>
 </html>
