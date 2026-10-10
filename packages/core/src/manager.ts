@@ -36,7 +36,7 @@ export interface ConsentOptions {
   delegateClicks?: boolean;
   /**
    * Publishes the declared services in `window.__zesteManifest` (`ZesteManifest`), as other CMPs
-   * do (`tarteaucitron.job`, `__tcfapi`…). `zeste scan` uses it to spot trackers loaded
+   * do (`tarteaucitron.job`, `__tcfapi`…). Audit tools use it to spot trackers loaded
    * outside zeste. Contains only what the banner already displays. Enabled by default.
    */
   expose?: boolean;

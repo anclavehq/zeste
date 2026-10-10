@@ -108,7 +108,7 @@ const action = (root: ParentNode, name: ConsentAction) =>
  * Audits the displayed banner: refusing must be as easy and as visible as accepting.
  * Call it once the banner is rendered (after layout).
  *
- * `buttons` points at the buttons directly, without zeste attributes (e.g. `zeste scan` on another CMP).
+ * `buttons` points at the buttons directly, without zeste attributes (e.g. an audit tool checking another CMP).
  */
 export function auditBanner(banner: Element, buttons?: { deny?: Element; accept?: Element }): ComplianceIssue[] {
   const deny = buttons ? buttons.deny : action(banner, 'denyAll');

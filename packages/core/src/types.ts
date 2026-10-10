@@ -36,7 +36,7 @@ export interface ServiceDefinition {
   preConsentRequests?: boolean;
   /**
    * Hosts contacted that depend on the configuration (self-hosted Matomo, Plausible endpoint…).
-   * Published in the page manifest so that `zeste scan` recognizes these domains.
+   * Published in the page manifest so that audit tools recognize these domains.
    */
   endpoints?: string[];
   /** Called when consent is granted: loads the script, renders the iframe… */

@@ -90,7 +90,7 @@ describe('youtube', () => {
   });
 });
 
-describe('endpoints (manifest for zeste scan)', () => {
+describe('endpoints (page manifest)', () => {
   it('hosts taken from the options, without the domain measured by Plausible', () => {
     expect(matomo({ matomoId: 1, matomoHost: 'https://stats.example.com/' }).endpoints).toEqual(['stats.example.com']);
     expect(plausible({ plausibleDomain: 'monsite.fr', plausibleEndpoint: 'p.monsite.fr' }).endpoints).toEqual(['p.monsite.fr']);
