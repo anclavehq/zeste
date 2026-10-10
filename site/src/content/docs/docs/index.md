@@ -47,7 +47,3 @@ cookie is for, are up to you.
 - For an app without a server, built with Vite, see [Single-page apps](./start/spa/).
 - For WordPress, a static site or PHP templates, see [Script tag](./start/script-tag/).
 - For a site that already uses tarteaucitron, see [Migrate from tarteaucitron](./guides/migrate/).
-
-:::note
-zeste is not on npm yet. The commands on these pages describe the first release.
-:::

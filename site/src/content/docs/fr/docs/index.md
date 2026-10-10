@@ -48,7 +48,3 @@ et la description de la finalité de chaque cookie restent à votre charge.
 - Pour une app sans serveur construite avec Vite, voyez [Applications monopage](./start/spa/).
 - Pour WordPress, un site statique ou des templates PHP, voyez [Balise script](./start/script-tag/).
 - Pour un site qui utilise déjà tarteaucitron, voyez [Migrer depuis tarteaucitron](./guides/migrate/).
-
-:::note
-zeste n'est pas encore sur npm. Les commandes de ces pages décrivent la première version publiée.
-:::
