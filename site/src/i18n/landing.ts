@@ -124,14 +124,14 @@ const en = {
   },
   tests: {
     eyebrow: 'Tested for real',
-    title: '634 tests, each where it can fail.',
+    title: '625 tests, each where it can fail.',
     text: 'Chromium driven by Playwright, on the built example apps. Nothing is simulated in the page. Behavior is tested once per library, appearance in each style and theme: no duplicate tests.',
     head: ['What is tested', 'How', 'Tests'],
     rows: [
       ['The 247 catalog services', 'Network intercepted: no third-party request before consent, a real effect once accepted', '247'],
       ['GA4, YouTube, Matomo Cloud', 'On the real network: real scripts, <code>_ga</code> cookies set then removed on withdrawal', '6'],
       ['The generated skins', 'Svelte, React and Vue × 3 libraries: keyboard, preferences, withdrawal once per library; accessibility (axe), theme and buttons of equal weight in 2 styles × light/dark; guard once per framework', '174'],
-      ['The same app, six times', 'SvelteKit, Next.js, Nuxt, and each framework without a server (including React 18): server rendering, no banner flash, navigation, withdrawal, guard', '90'],
+      ['The same app, six times', 'SvelteKit, Next.js, Nuxt, and each framework without a server (including React 18): server rendering, no banner flash, navigation, withdrawal, guard; the server-rendering tests only in the three apps that have one', '81'],
       ['The migrated site', 'tarteaucitron choices kept, design system intact', '15'],
       ['The script tag version', 'Plain HTML site: accessibility, keyboard, withdrawal, guard, tarteaucitron config kept as is, only declared services downloaded, proof of consent sent on every choice', '13'],
       ['Automatic language', 'Browser in German, in Norwegian, in a language without a translation; one language downloaded', '5'],
@@ -318,14 +318,14 @@ const fr: Landing = {
   },
   tests: {
     eyebrow: 'Testé pour de vrai',
-    title: '634 tests, chacun là où il peut échouer.',
+    title: '625 tests, chacun là où il peut échouer.',
     text: 'Chromium piloté par Playwright, sur les apps d’exemple buildées. Rien n’est simulé côté page. Le comportement est testé une fois par lib, l’apparence dans chaque style et chaque thème : pas de test en double.',
     head: ['Ce qui est testé', 'Comment', 'Tests'],
     rows: [
       ['Les 247 services du catalogue', 'Réseau intercepté : aucune requête tierce avant consentement, un effet réel une fois accepté', '247'],
       ['GA4, YouTube, Matomo Cloud', 'Sur le vrai réseau : vrais scripts, cookies <code>_ga</code> posés puis supprimés au retrait', '6'],
       ['Les skins générées', 'Svelte, React et Vue × 3 libs : clavier, préférences, retrait une fois par lib ; accessibilité (axe), thème et boutons de même poids dans les 2 styles × clair/sombre ; garde-fou une fois par framework', '174'],
-      ['La même app, six fois', 'SvelteKit, Next.js, Nuxt, et chaque framework sans serveur (dont React 18) : rendu serveur, pas de flash de bannière, navigation, retrait, garde-fou', '90'],
+      ['La même app, six fois', 'SvelteKit, Next.js, Nuxt, et chaque framework sans serveur (dont React 18) : rendu serveur, pas de flash de bannière, navigation, retrait, garde-fou ; les tests de rendu serveur seulement dans les trois apps qui en ont un', '81'],
       ['Le site migré', 'Choix tarteaucitron conservés, design system intact', '15'],
       ['La version balise script', 'Site HTML sans framework : accessibilité, clavier, retrait, garde-fou, config tarteaucitron gardée telle quelle, seuls les services déclarés téléchargés, preuve de consentement envoyée à chaque choix', '13'],
       ['La langue automatique', 'Navigateur en allemand, en norvégien, dans une langue sans traduction ; une seule langue téléchargée', '5'],
