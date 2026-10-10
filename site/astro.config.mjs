@@ -19,7 +19,10 @@ export default defineConfig({
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/anclavehq/zeste' }],
       editLink: { baseUrl: 'https://github.com/anclavehq/zeste/edit/main/site/' },
       customCss: ['./src/styles/fonts.css', './src/styles/starlight.css'],
-      components: { SiteTitle: './src/components/SiteTitle.astro' },
+      components: { 
+        SiteTitle: './src/components/SiteTitle.astro',
+        Head: './src/components/Head.astro'
+      },
       sidebar: [
         {
           label: 'Get started',

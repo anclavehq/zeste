@@ -152,9 +152,20 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
     <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
     <link rel="alternate" hreflang="en" href={new URL(home('en'), Astro.site)} />
     <link rel="alternate" hreflang="fr" href={new URL(home('fr'), Astro.site)} />
+    <link rel="alternate" type="text/plain" href="/llms.txt" />
     <meta property="og:title" content={t.title} />
     <meta property="og:description" content={t.description} />
     <meta property="og:image" content={new URL(asset('media/hero-loop.jpg'), Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "zeste",
+      "operatingSystem": "Any",
+      "applicationCategory": "DeveloperApplication",
+      "description": "An uncompromising consent manager for modern frameworks.",
+      "url": "https://anclavehq.github.io/zeste/"
+    })}></script>
   </head>
   <body>
     <header class="topbar">

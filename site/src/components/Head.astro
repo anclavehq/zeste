@@ -1,0 +1,30 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+
+const { entry } = Astro.props;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": entry.data.title,
+  "description": entry.data.description,
+  "url": Astro.url.href,
+  "image": new URL('media/hero-loop.jpg', Astro.site ?? Astro.url.origin).href,
+  "author": {
+    "@type": "Organization",
+    "name": "AnclaveHQ"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AnclaveHQ"
+  }
+};
+---
+<Default {...Astro.props} />
+
+<link rel="alternate" type="text/plain" href="/llms.txt" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image" content={new URL('media/hero-loop.jpg', Astro.site ?? Astro.url.origin).href} />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
