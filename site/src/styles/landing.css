@@ -93,7 +93,9 @@ footer .footer-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .frame-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
 .frame-bar span { margin-left: 10px; font: 12px var(--mono); color: var(--soft); }
 .hero-player { position: relative; }
-.frame.hero-video video { aspect-ratio: 16 / 9; object-fit: cover; background: #fff; }
+.hero-video { margin: 0; display: grid; gap: 10px; }
+.hero-video video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 14px; background: var(--tint); }
+.hero-video figcaption { border: 0; padding: 0; }
 .hero-toggle { position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--ink); color: var(--paper); cursor: pointer; opacity: 0.85; }
 .hero-toggle:hover { opacity: 1; }
 .hero-toggle .i-play, .hero-toggle.paused .i-pause { display: none; }
@@ -249,11 +251,11 @@ footer { border-top: 1px solid var(--line); padding-top: 24px; font-size: 14px; 
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
   /* Hero: one orchestrated movement */
-  .hero h1, .hero .lead, .hero .cmd, .hero .frame { animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .hero h1, .hero .lead, .hero .cmd, .hero .hero-video { animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   .hero h1 { animation-delay: 0.08s; }
   .hero .lead { animation-delay: 0.18s; }
   .hero .cmd { animation-delay: 0.28s; }
-  .hero .frame { animation-delay: 0.38s; }
+  .hero .hero-video { animation-delay: 0.38s; }
   .slice { animation: slice-in 1.2s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
   .slice svg { animation: spin 90s linear infinite; }
 

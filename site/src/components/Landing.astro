@@ -205,8 +205,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
           <p class="lead">{t.hero.facts}</p>
           <div class="cmd"><code>npx zeste init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
         </div>
-        <figure class="frame hero-video">
-          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>maison-exemple.fr</span></div>
+        <figure class="hero-video">
           <div class="hero-player">
             <video id="hero-video" autoplay muted loop playsinline preload="auto" poster={asset('media/hero-loop.jpg')} aria-label={t.hero.video}>
               <source src={asset('media/hero-loop.webm')} type="video/webm" />
