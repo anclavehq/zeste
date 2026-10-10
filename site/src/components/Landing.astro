@@ -154,7 +154,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
     <link rel="alternate" hreflang="fr" href={new URL(home('fr'), Astro.site)} />
     <meta property="og:title" content={t.title} />
     <meta property="og:description" content={t.description} />
-    <meta property="og:image" content={new URL(asset('media/zeste-presentation.jpg'), Astro.site)} />
+    <meta property="og:image" content={new URL(asset('media/hero-loop.jpg'), Astro.site)} />
   </head>
   <body>
     <header class="topbar">
@@ -206,8 +206,18 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
           <div class="cmd"><code>npx zeste init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
         </div>
         <figure class="frame hero-video">
-          <video src={asset('media/zeste-presentation.mp4')} poster={asset('media/zeste-presentation.jpg')} controls preload="metadata" playsinline aria-label={t.hero.video}></video>
-          {t.hero.videoNote && <figcaption>{t.hero.videoNote}</figcaption>}
+          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>maison-exemple.fr</span></div>
+          <div class="hero-player">
+            <video id="hero-video" autoplay muted loop playsinline preload="auto" poster={asset('media/hero-loop.jpg')} aria-label={t.hero.video}>
+              <source src={asset('media/hero-loop.webm')} type="video/webm" />
+              <source src={asset('media/hero-loop.mp4')} type="video/mp4" />
+            </video>
+            <button type="button" class="hero-toggle" id="hero-toggle" aria-label={t.hero.pause} data-pause={t.hero.pause} data-play={t.hero.play}>
+              <svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="currentColor"></rect><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="currentColor"></rect></svg>
+              <svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9.5-5.5z" fill="currentColor"></path></svg>
+            </button>
+          </div>
+          <figcaption>{t.hero.videoCaption}</figcaption>
         </figure>
       </section>
 
@@ -581,6 +591,19 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
         const saved = localStorage.getItem('zeste-fw');
         if (saved && fwSeg.querySelector(`[data-v="${saved}"]`)) showFramework(saved);
       } catch {}
+
+      // Hero loop: a pause button (motion longer than 5 s), and no autoplay when the visitor asks for reduced motion
+      const heroVideo = document.getElementById('hero-video');
+      const heroToggle = document.getElementById('hero-toggle');
+      const syncToggle = () => {
+        heroToggle.classList.toggle('paused', heroVideo.paused);
+        heroToggle.setAttribute('aria-label', heroVideo.paused ? heroToggle.dataset.play : heroToggle.dataset.pause);
+      };
+      heroToggle.addEventListener('click', () => (heroVideo.paused ? heroVideo.play() : heroVideo.pause()));
+      heroVideo.addEventListener('play', syncToggle);
+      heroVideo.addEventListener('pause', syncToggle);
+      if (reduce) heroVideo.pause();
+      syncToggle();
 
       // Before / after: drag with the mouse or the arrow keys
       const compare = document.getElementById('compare');
