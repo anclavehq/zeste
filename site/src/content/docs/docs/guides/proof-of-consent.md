@@ -1,10 +1,11 @@
 ---
 title: Proof of consent
-description: Keep a record of every choice, to show that a visitor consented.
+description: Keep a record of each choice to show that a visitor consented.
 ---
 
-The GDPR (art. 7) requires being able to show that a visitor consented. `onRecord` is called after every choice
-with what proves it. zeste sends nothing by itself: sending and keeping the record is up to your site.
+Article 7 of the GDPR requires you to be able to show that a visitor consented. zeste calls `onRecord` after each
+choice with a record of it. zeste does not send the record anywhere. Your site sends it to your server and keeps
+it.
 
 ```ts
 createZeste({
@@ -17,7 +18,7 @@ createZeste({
 ```ts
 // record
 {
-  id: '9f2c…',                       // random, kept in the consent cookie
+  id: '9f2c…',                       // random, stored in the consent cookie
   date: '2026-10-09T14:03:12.000Z',
   action: 'denyAll',
   choices: { gtag: false, youtube: false },
@@ -25,17 +26,23 @@ createZeste({
 }
 ```
 
-- `id` is random and kept in the consent cookie: it links the choices of one browser across changes, not a person.
-- `action` says how the choice was made: `acceptAll`, `denyAll`, `set` (from the preferences), `grant` or `deny`
-  (one service, from a placeholder), `category`.
-- `choices` holds every service that needs consent, after the choice.
-- `policyVersion` is the version of your policy the visitor answered. Changing it asks every visitor again.
+The record has these fields:
 
-Reading a stored choice back, on the next visit, is not a new choice and is not reported.
+- `id` is random and stored in the consent cookie. It links the successive choices made in one browser. It does
+  not identify a person.
+- `action` says how the visitor chose. It is `acceptAll`, `denyAll`, `set` (from the preferences), `grant` or
+  `deny` (one service, from a placeholder), or `category`.
+- `choices` lists every service that needs consent, with its state after the choice.
+- `policyVersion` is the version of your policy that the visitor answered. When you change it, zeste asks every
+  visitor again.
 
-With the [script tag](../../start/script-tag/), put the same `onRecord` in `window.zesteConfig`.
+On a later visit, zeste reads the stored choice from the cookie. That is not a new choice, and `onRecord` is not
+called.
+
+With the [script tag](../../start/script-tag/), put the same `onRecord` function in `window.zesteConfig`.
 
 ## Keeping the records
 
-Store them on your server with the date you received them. The record holds no personal data on its own; stored next to an IP
-address or an account, it does. How long to keep them is a legal question for your site.
+Store each record on your server with the date you received it. A record contains no personal data on its own.
+It becomes personal data if you store it with an IP address or an account. How long to keep the records is a
+legal question for your site.

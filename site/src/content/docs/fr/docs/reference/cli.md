@@ -16,12 +16,12 @@ Il lit le projet une fois et reconnaît :
 
 - une configuration tarteaucitron : `tarteaucitron.job`, `tarteaucitron.user.*`, nom et domaine du cookie,
   Consent Mode ;
-- les scripts les plus courants collés tels quels dans les pages : Google Analytics, Google Ads, Tag Manager,
+- les scripts les plus courants collés directement dans les pages : Google Analytics, Google Ads, Tag Manager,
   Matomo, Hotjar, Meta Pixel, Clarity, Google Maps, vidéos YouTube et Vimeo.
 
 Son rapport indique, fichier et ligne, les scripts à retirer (zeste les charge après consentement), les contenus à
-mettre derrière `<ConsentGate>` et les options à compléter. Il ne cherche pas à reconnaître tous les tiers :
-vérifiez la liste, puis ajoutez les services manquants depuis le [catalogue](../services/).
+mettre derrière `<ConsentGate>` et les options à compléter. Il ne reconnaît pas tous les tiers. Vérifiez la
+liste, puis ajoutez les services manquants depuis le [catalogue](../services/).
 
 | Option | |
 |---|---|

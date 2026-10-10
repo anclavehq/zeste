@@ -3,8 +3,8 @@ title: Embedded content
 description: Videos, maps and widgets behind a placeholder until the visitor accepts the service.
 ---
 
-`<ConsentGate>` shows your placeholder while the service is not accepted, then the content. The placeholder is
-rendered on the server, and mounting a new embed does not reload the ones already playing.
+`<ConsentGate>` shows your placeholder until the visitor accepts the service, then shows the content. The server
+renders the placeholder. Adding a new embed to the page does not reload the ones already playing.
 
 ```svelte
 <ConsentGate service="youtube" embed={{ videoID: 'dQw4w9WgXcQ' }}>
@@ -38,8 +38,8 @@ rendered on the server, and mounting a new embed does not reload the ones alread
 
 ## Your own content
 
-Without `embed`, `<ConsentGate>` renders its children once the service is accepted: a widget you build yourself, a
-component from the service's SDK…
+Without `embed`, `<ConsentGate>` renders its children once the visitor accepts the service. Use this for a widget
+you build yourself or a component from the service's SDK.
 
 ```svelte
 <ConsentGate service="googlemaps">

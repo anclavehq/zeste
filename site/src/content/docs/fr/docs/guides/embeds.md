@@ -38,8 +38,8 @@ rendu côté serveur, et monter un nouveau contenu ne recharge pas ceux déjà e
 
 ## Votre propre contenu
 
-Sans `embed`, `<ConsentGate>` affiche ses enfants une fois le service accepté : un widget que vous construisez
-vous-même, un composant du SDK du service…
+Sans `embed`, `<ConsentGate>` affiche ses enfants une fois que le visiteur a accepté le service. Utilisez-le pour
+un widget que vous construisez vous-même ou pour un composant du SDK du service.
 
 ```svelte
 <ConsentGate service="googlemaps">

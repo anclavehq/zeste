@@ -1,49 +1,52 @@
 ---
 title: Introduction
-description: What zeste is, what it does for you and what it leaves to you.
+description: What zeste does, what you handle yourself, and where to start.
 ---
 
-zeste is a **headless** cookie consent library. It keeps the service catalog of
-[tarteaucitron.js](https://github.com/AmauriC/tarteaucitron.js) (247 services, texts in 36 languages) and replaces
-its engine and its interface: you build the banner with your own components.
+zeste is a cookie consent library for Svelte, React, Vue and sites without a framework. It reuses the service
+catalog of [tarteaucitron.js](https://github.com/AmauriC/tarteaucitron.js), with 247 services and texts in 36
+languages, and replaces its engine and its interface. You build the banner with your own components.
 
 ## What zeste does
 
-- Loads each third-party service **only after consent**, and nothing before: no request to Google, YouTube or
-  Matomo until the visitor accepts.
-- Stores the choice in the same cookie as tarteaucitron, so visitors of a migrated site keep their choices.
-- Withdraws consent cleanly: cookies deleted, embeds back to their placeholder.
-- Drives Google Consent Mode v2.
-- Warns you during development when the banner breaks a measurable rule (a "Deny all" button that is missing,
-  smaller or paler than "Accept all", no way to reopen the preferences).
-- Hands you a record of each choice, to keep as proof of consent.
+- It loads each third-party service only after the visitor accepts it. Before that, the page sends no request to
+  Google, YouTube, Matomo or any other service in the catalog.
+- It stores the choice in the same cookie as tarteaucitron. Visitors of a site that moves from tarteaucitron keep
+  their choices.
+- It handles withdrawal. When a visitor refuses a service they had accepted, zeste deletes its cookies and puts
+  embedded videos back behind their placeholder.
+- It updates Google Consent Mode v2.
+- In development, it warns you when the banner breaks a measurable rule, for example when "Deny all" is missing or
+  smaller than "Accept all".
+- It passes a record of each choice to your code, which you can keep as proof of consent.
 
-## What it leaves to you
+## What you handle
 
-- **The interface.** zeste draws nothing in Svelte, React or Vue. `npx zeste add` writes a first version with your
-  UI library, and those files are yours.
-- **The texts and your privacy policy.** zeste ships tarteaucitron's translations; what your cookies are for is
-  yours to describe.
+In Svelte, React and Vue, zeste does not draw anything. You write the banner and the preferences with your
+components. `npx zeste add` writes a first version with your UI library, and the files are yours to change.
+
+zeste ships tarteaucitron's translations of the banner texts. Your privacy policy, and the description of what each
+cookie is for, are up to you.
 
 ## Packages
 
 | Package | Role |
 |---|---|
-| `@zeste/core` | Framework-free engine: state, cookie, plugins, tarteaucitron compatibility |
-| `@zeste/services` | The catalog, one module per service, and the texts |
+| `@zeste/core` | The engine. It works without a framework and handles the state, the cookie, plugins and tarteaucitron compatibility |
+| `@zeste/services` | The catalog, with one module per service, and the texts |
 | `@zeste/svelte` | Svelte 5 bindings |
-| `@zeste/react` | React 18 and 19 bindings, Next.js |
-| `@zeste/vue` | Vue 3 bindings, Nuxt |
-| `@zeste/browser` | One `<script>` tag for sites without a framework, banner included |
-| `zeste` | The CLI: `zeste init`, `zeste add` |
+| `@zeste/react` | React 18 and 19 bindings, for Next.js and client-only apps |
+| `@zeste/vue` | Vue 3 bindings, for Nuxt and client-only apps |
+| `@zeste/browser` | A `<script>` tag for sites without a framework, with a banner included |
+| `zeste` | The CLI, with `zeste init` and `zeste add` |
 
 ## Where to start
 
-- A SvelteKit, Next.js or Nuxt app: [SvelteKit](./start/sveltekit/), [Next.js](./start/nextjs/),
+- For a SvelteKit, Next.js or Nuxt app, follow [SvelteKit](./start/sveltekit/), [Next.js](./start/nextjs/) or
   [Nuxt](./start/nuxt/).
-- A client-only app (Vite): [Single-page apps](./start/spa/).
-- WordPress, a static site, PHP templates: [Script tag](./start/script-tag/).
-- A site already on tarteaucitron: [Migrate from tarteaucitron](./guides/migrate/).
+- For an app without a server, built with Vite, see [Single-page apps](./start/spa/).
+- For WordPress, a static site or PHP templates, see [Script tag](./start/script-tag/).
+- For a site that already uses tarteaucitron, see [Migrate from tarteaucitron](./guides/migrate/).
 
 :::note
 zeste is not on npm yet. The commands on these pages describe the first release.

@@ -3,9 +3,9 @@ title: Balise script
 description: zeste sur un site sans framework JavaScript (WordPress, site statique, templates PHP), bannière comprise.
 ---
 
-`@zeste/browser` apporte le moteur, le catalogue et une bannière, des préférences et des placeholders prêts à
-l'emploi, dans la langue de la page. Seuls les services déclarés et une langue sont téléchargés : le moteur et
-l'interface pèsent 17 ko compressés.
+`@zeste/browser` contient le moteur, le catalogue, et une bannière, des préférences et des placeholders prêts à
+l'emploi dans la langue de la page. Le navigateur ne télécharge que les services déclarés et une langue. Le
+moteur et l'interface pèsent 17 ko compressés.
 
 ## Installation
 
@@ -47,9 +47,9 @@ Utilisez le balisage de tarteaucitron ; zeste affiche un placeholder tant que le
 
 ## Remplacer tarteaucitron.js
 
-Remplacez la balise `<script>` de tarteaucitron par celle de zeste, au même endroit, et gardez
-`tarteaucitron.init({…})`, `tarteaucitron.user.*` et `tarteaucitron.job` tels quels. Les visiteurs gardent leurs
-choix (même cookie, `cookieName` personnalisé compris), les liens `#tarteaucitron` ouvrent toujours les préférences
-et le balisage `youtube_player` fonctionne toujours. Voir [Migrer depuis tarteaucitron](../../guides/migrate/).
+Remplacez la balise `<script>` de tarteaucitron par celle de zeste, au même endroit. zeste lit
+`tarteaucitron.init({…})`, `tarteaucitron.user.*` et `tarteaucitron.job`, qui peuvent rester inchangés. Les
+visiteurs gardent leurs choix, car zeste lit le même cookie, y compris avec un `cookieName` personnalisé. Les liens
+vers `#tarteaucitron` ouvrent toujours les préférences, et le balisage `youtube_player` fonctionne toujours. Voir [Migrer depuis tarteaucitron](../../guides/migrate/).
 
 Toutes les options : [Configuration de la balise script](../../reference/script-config/).

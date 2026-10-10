@@ -3,7 +3,7 @@ title: Single-page apps
 description: zeste in a client-only app (Vite) with Svelte, React or Vue, or with no framework at all.
 ---
 
-Without a server, the choice is read from the cookie in the browser: leave out `initial`. Everything else is the
+Without a server, zeste reads the choice from the cookie in the browser, so you leave out `initial`. Everything else is the
 same as in the [SvelteKit](../../start/sveltekit/), [Next.js](../../start/nextjs/) and [Nuxt](../../start/nuxt/)
 guides, including `npx zeste add`.
 

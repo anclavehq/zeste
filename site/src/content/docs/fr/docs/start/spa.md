@@ -3,7 +3,7 @@ title: Applications monopage
 description: zeste dans une app sans serveur (Vite) avec Svelte, React ou Vue, ou sans framework du tout.
 ---
 
-Sans serveur, le choix est lu dans le cookie, dans le navigateur : n'indiquez pas `initial`. Tout le reste est
+Sans serveur, zeste lit le choix dans le cookie, dans le navigateur, donc vous n'indiquez pas `initial`. Tout le reste est
 identique aux guides [SvelteKit](../sveltekit/), [Next.js](../nextjs/) et [Nuxt](../nuxt/), `npx zeste add` compris.
 
 ```svelte

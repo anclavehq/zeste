@@ -65,7 +65,7 @@ Returned by `createZeste`, and by `getZeste()` (Svelte) or `useZeste()` (React, 
 | `<ConsentBanner>` | Renders its content only while the banner should show; marks it for the guard |
 | `<ConsentGate service embed? embedClass? placeholder>` | See [Embedded content](../../guides/embeds/) |
 
-## The engine: `@zeste/core`
+## The `@zeste/core` engine
 
 `createConsent(options)` takes the same options (but `messages` and `guard`) and returns a framework-free manager:
 `getSnapshot()`, `subscribe(listener)`, `has`, `grant`, `deny`, `grantAll`, `denyAll`, `setCategory`, `set(choices)`,

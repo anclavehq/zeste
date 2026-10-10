@@ -7,8 +7,9 @@ tableOfContents: false
 import ServiceCatalog from '../../../../components/ServiceCatalog.astro';
 
 Every service is a function exported by `@zeste/services`, named after its key. Its options are typed; the
-required ones are marked. The catalog is generated from tarteaucitron.js: a missing service is best added
-[there](https://github.com/AmauriC/tarteaucitron.js), then picked up by zeste.
+required ones are marked. The catalog is generated from tarteaucitron.js. To add a missing service,
+contribute it to [tarteaucitron.js](https://github.com/AmauriC/tarteaucitron.js), and zeste picks it up on its
+next update.
 
 ```ts
 import { gtag, youtube } from '@zeste/services';

@@ -66,7 +66,7 @@ Renvoyé par `createZeste`, et par `getZeste()` (Svelte) ou `useZeste()` (React,
 | `<ConsentBanner>` | N'affiche son contenu que quand la bannière doit s'afficher ; la signale au garde-fou |
 | `<ConsentGate service embed? embedClass? placeholder>` | Voir [Contenus intégrés](../../guides/embeds/) |
 
-## Le moteur : `@zeste/core`
+## Le moteur `@zeste/core`
 
 `createConsent(options)` prend les mêmes options (sauf `messages` et `guard`) et renvoie un gestionnaire sans
 framework : `getSnapshot()`, `subscribe(listener)`, `has`, `grant`, `deny`, `grantAll`, `denyAll`, `setCategory`,

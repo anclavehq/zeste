@@ -3,7 +3,7 @@ title: Your own UI
 description: Build the banner and the preferences with your UI library or your own design system.
 ---
 
-zeste is headless: it gives you a state and actions, and works with any components.
+zeste is headless. It gives you a state and actions, and you build the interface with any components.
 
 ## Start from a generated variant
 
@@ -24,9 +24,9 @@ This copies a banner, preferences and a placeholder into your project, written w
 `--force`. The logic, the accessibility and the compliance checks stay in the zeste packages and are updated with
 them.
 
-Colors live in `theme.css` (`--zeste-*` variables, scoped to the skin's elements): changing `--zeste-ink` and
-`--zeste-accent` is often enough. Dark mode follows the `dark` class or `data-theme="dark"`. The shadcn variants
-have no `theme.css`: they follow your project's theme.
+The colors are in `theme.css`, as `--zeste-*` variables scoped to the generated elements. Changing `--zeste-ink`
+and `--zeste-accent` is often enough to match your site. Dark mode follows the `dark` class or
+`data-theme="dark"` on the page. The shadcn variants have no `theme.css` and use your project's shadcn theme.
 
 ## With your own design system
 
@@ -63,14 +63,14 @@ Start from the closest variant and swap the imports for your components. Attach 
 ```
 
 The available actions are `acceptAll`, `denyAll`, `openPreferences`, `savePreferences` and `closePreferences`.
-They wire the click and mark the button for the [compliance guard](../compliance/). A plain click handler
-(`onclick={zeste.denyAll}`) works too, but the guard cannot check that button.
+Each action handles the click and marks the button for the [compliance guard](../compliance/). A plain click
+handler such as `onclick={zeste.denyAll}` also works, but the guard cannot check that button.
 
 ## The preferences
 
 - `zeste.categories` groups the services by purpose (`analytic`, `ads`, `video`…), each with a `status`
   (`granted`, `denied`, `unknown` or `mixed`).
-- `zeste.draft` holds the choices being edited; `savePreferences` applies them. Opening the preferences fills the
-  draft with the current choices, with undecided services unchecked: nothing is pre-checked.
+- `zeste.draft` holds the choices being edited, and `savePreferences` applies them. Opening the preferences fills
+  the draft with the current choices. Services the visitor has not decided on start unchecked.
 - `zeste.exempt` lists the services that need no consent (for example self-hosted Matomo), to show them as
   information.

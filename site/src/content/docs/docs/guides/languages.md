@@ -3,7 +3,7 @@ title: Languages
 description: The banner texts in 36 languages, chosen from the page or the browser.
 ---
 
-The texts come from tarteaucitron, in its 36 languages. Without `messages`, they default to English.
+The banner texts come from tarteaucitron, which translates them into 36 languages. If you pass no `messages`, zeste uses English.
 
 ## One language
 
@@ -29,13 +29,14 @@ const language = pickLanguage([pageLanguage, ...acceptedLanguages(request.header
 const messages = await loadMessages(language);
 ```
 
-The [script tag](../../start/script-tag/) version does this on its own; force a language with `language: 'de'`.
+The [script tag](../../start/script-tag/) version picks the language by itself. To force one, set `language: 'de'`.
 
 ## Typed texts in your components
 
-`zeste.messages` holds the texts, typed: `zeste.messages.acceptAll`, `zeste.messages.categories.analytic?.title`…
-In a child component, pass the type to get them: `getZeste<Messages>()` in Svelte, `useZeste<Messages>()` in React
-and Vue, with `Messages` from `@zeste/services/i18n/types`.
+`zeste.messages` holds the texts with their types, for example `zeste.messages.acceptAll` or
+`zeste.messages.categories.analytic?.title`. In a child component, pass the `Messages` type from
+`@zeste/services/i18n/types` to get them typed. Use `getZeste<Messages>()` in Svelte and `useZeste<Messages>()` in
+React and Vue.
 
 Developer messages (the [compliance guard](../compliance/) warnings) are in English.
 

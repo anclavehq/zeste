@@ -15,11 +15,11 @@ npx zeste init --dry-run   # report only
 It reads the project once and recognizes:
 
 - a tarteaucitron configuration: `tarteaucitron.job`, `tarteaucitron.user.*`, cookie name and domain, Consent Mode;
-- the most common snippets pasted as is in pages: Google Analytics, Google Ads, Tag Manager, Matomo, Hotjar, Meta
+- the most common snippets pasted directly into pages: Google Analytics, Google Ads, Tag Manager, Matomo, Hotjar, Meta
   Pixel, Clarity, Google Maps, YouTube and Vimeo embeds.
 
 Its report lists, file and line, the scripts to remove (zeste loads them after consent), the embeds to put behind
-`<ConsentGate>`, and the options left to fill in. It does not try to recognize every third party: check the list,
+`<ConsentGate>`, and the options left to fill in. It does not recognize every third party. Check the list,
 then add the missing services from the [catalog](../services/).
 
 | Option | |

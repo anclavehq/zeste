@@ -3,9 +3,9 @@ title: Script tag
 description: zeste on a site without a JavaScript framework (WordPress, static site, PHP templates), banner included.
 ---
 
-`@zeste/browser` brings the engine, the catalog and a ready-made banner, preferences and placeholders, in the
-page's language. Only the declared services and one language are downloaded: the engine and the interface weigh
-17 kB gzipped.
+`@zeste/browser` contains the engine, the catalog, and a ready-made banner, preferences and placeholders in the
+page's language. The browser downloads only the declared services and one language. The engine and the interface
+weigh 17 kB gzipped.
 
 ## Set up
 
@@ -46,9 +46,9 @@ Use tarteaucitron's markup; zeste shows a placeholder until the service is accep
 
 ## Replacing tarteaucitron.js
 
-Replace tarteaucitron's `<script>` tag with zeste's, at the same place, and keep `tarteaucitron.init({…})`,
-`tarteaucitron.user.*` and `tarteaucitron.job` as they are. Visitors keep their choices (same cookie, custom
-`cookieName` included), `#tarteaucitron` links still open the preferences and the `youtube_player` markup still
-works. See [Migrate from tarteaucitron](../../guides/migrate/).
+Replace tarteaucitron's `<script>` tag with zeste's, in the same place. zeste reads `tarteaucitron.init({…})`,
+`tarteaucitron.user.*` and `tarteaucitron.job`, which can stay unchanged. Visitors keep their choices because zeste
+reads the same cookie, including a custom `cookieName`. Links to `#tarteaucitron` still open the preferences, and
+the `youtube_player` markup still works. See [Migrate from tarteaucitron](../../guides/migrate/).
 
 All options: [Script tag configuration](../../reference/script-config/).

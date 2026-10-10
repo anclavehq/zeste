@@ -20,8 +20,8 @@ import { gtag, youtube } from '@zeste/services';
 export const services = () => [gtag({ gtagUa: 'G-XXXXXXX' }), youtube()];
 ```
 
-Chaque service est une fonction de `@zeste/services` : ses options sont typées, et son code n'est téléchargé que
-quand le visiteur l'accepte. La liste complète est dans le [catalogue des services](../../reference/services/).
+Chaque service est une fonction de `@zeste/services`. Ses options sont typées, et le navigateur ne télécharge son
+code que quand le visiteur l'accepte. La liste complète est dans le [catalogue des services](../../reference/services/).
 
 ## 2. Lire le choix côté serveur
 
@@ -34,7 +34,7 @@ export const load = ({ cookies }) => ({
 });
 ```
 
-Le premier rendu est alors déjà le bon : un visiteur qui a déjà choisi ne voit jamais la bannière clignoter.
+Le premier rendu montre alors déjà le bon état. Un visiteur qui a déjà choisi ne voit pas la bannière apparaître puis disparaître.
 
 ## 3. Générer l'interface
 
@@ -46,7 +46,7 @@ npx zeste add --style pelure  # l'autre style
 `CookieBanner`, `CookiePreferences` et `CookiePlaceholder` sont écrits dans `src/lib/components/zeste/`. Voir
 [Votre propre interface](../../guides/ui/) pour les adapter.
 
-## 4. Brancher le tout
+## 4. Ajouter zeste au layout
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
@@ -78,7 +78,7 @@ npx zeste add --style pelure  # l'autre style
 
 Dans n'importe quel composant enfant, `getZeste()` renvoie le même objet.
 
-## Ensuite
+## Pour aller plus loin
 
 - Vidéos et cartes : [Contenus intégrés](../../guides/embeds/)
 - Plusieurs langues : [Langues](../../guides/languages/)

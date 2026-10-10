@@ -28,9 +28,9 @@ npx zeste add --style pelure
 
 `CookieBanner`, `CookiePreferences` et `CookiePlaceholder` sont écrits dans `app/components/zeste/`.
 
-## 3. Brancher le tout
+## 3. Ajouter zeste à l'app
 
-`useCookie` lit aussi le cookie pendant le rendu serveur : le premier rendu est déjà le bon.
+`useCookie` lit aussi le cookie pendant le rendu serveur, donc le premier rendu montre déjà le bon état.
 
 ```vue
 <!-- app/app.vue -->

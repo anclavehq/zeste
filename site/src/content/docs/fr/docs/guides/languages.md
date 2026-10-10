@@ -3,7 +3,7 @@ title: Langues
 description: Les textes de la bannière en 36 langues, choisis d'après la page ou le navigateur.
 ---
 
-Les textes viennent de tarteaucitron, dans ses 36 langues. Sans `messages`, ils sont en anglais.
+Les textes de la bannière viennent de tarteaucitron, qui les traduit en 36 langues. Si vous ne passez pas de `messages`, zeste utilise l'anglais.
 
 ## Une seule langue
 
@@ -29,14 +29,14 @@ const language = pickLanguage([pageLanguage, ...acceptedLanguages(request.header
 const messages = await loadMessages(language);
 ```
 
-La version [balise script](../../start/script-tag/) le fait toute seule ; forcez une langue avec `language: 'de'`.
+La version [balise script](../../start/script-tag/) choisit la langue toute seule. Pour en imposer une, indiquez `language: 'de'`.
 
 ## Des textes typés dans vos composants
 
-`zeste.messages` contient les textes, typés : `zeste.messages.acceptAll`,
-`zeste.messages.categories.analytic?.title`… Dans un composant enfant, passez le type pour les obtenir :
-`getZeste<Messages>()` en Svelte, `useZeste<Messages>()` en React et Vue, avec `Messages` de
-`@zeste/services/i18n/types`.
+`zeste.messages` contient les textes avec leurs types, par exemple `zeste.messages.acceptAll` ou
+`zeste.messages.categories.analytic?.title`. Dans un composant enfant, passez le type `Messages` de
+`@zeste/services/i18n/types` pour les obtenir typés. Utilisez `getZeste<Messages>()` en Svelte et
+`useZeste<Messages>()` en React et Vue.
 
 Les messages destinés aux développeurs (avertissements du [garde-fou](../compliance/)) sont en anglais.
 

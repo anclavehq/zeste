@@ -49,7 +49,7 @@ npx zeste add --style pelure
 
 This writes `CookieBanner`, `CookiePreferences` and `CookiePlaceholder` into `components/zeste/`.
 
-## 4. Wire it up
+## 4. Add zeste to your layout
 
 ```tsx
 // app/Consent.tsx
