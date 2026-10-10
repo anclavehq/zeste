@@ -1,0 +1,20 @@
+---
+// The logo leads back to the home page in the reader's language, not to the docs.
+const lang = Astro.locals.starlightRoute.locale;
+const home = import.meta.env.BASE_URL + (lang ? `${lang}/` : '');
+---
+<a href={home} class="site-title">
+  <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#f5d742" stroke="currentColor" stroke-width="1.5"/><g stroke="currentColor" stroke-width="1.2"><line x1="13" y1="3" x2="13" y2="23"/><line x1="3" y1="13" x2="23" y2="13"/><line x1="6" y1="6" x2="20" y2="20"/><line x1="20" y1="6" x2="6" y2="20"/></g><circle cx="13" cy="13" r="2.2" fill="#fffdf4"/></svg>
+  <span>zeste</span>
+</a>
+<style>
+  .site-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--sl-color-white);
+    text-decoration: none;
+    font: 800 1.35rem/1 var(--zeste-display);
+    letter-spacing: -0.02em;
+  }
+</style>

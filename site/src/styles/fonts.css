@@ -1,0 +1,4 @@
+/* Self-hosted: a consent library's site does not call Google Fonts before consent. */
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/instrument-sans';
+@import '@fontsource-variable/jetbrains-mono';

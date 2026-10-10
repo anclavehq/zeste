@@ -1,0 +1,21 @@
+---
+title: Catalogue des services
+description: Les 247 services du catalogue, leur fonction et leurs options.
+tableOfContents: false
+---
+
+import ServiceCatalog from '../../../../../components/ServiceCatalog.astro';
+
+Chaque service est une fonction exportée par `@zeste/services`, du nom de sa clé. Ses options sont typées ; les
+obligatoires sont signalées. Le catalogue est généré depuis tarteaucitron.js : un service manquant s'ajoute de
+préférence [là-bas](https://github.com/AmauriC/tarteaucitron.js), puis zeste le reprend.
+
+```ts
+import { gtag, youtube } from '@zeste/services';
+
+const services = [gtag({ gtagUa: 'G-XXXXXXX' }), youtube()];
+```
+
+Avec la [balise script](../../start/script-tag/), utilisez la clé : `services: { gtag: { gtagUa: 'G-XXXXXXX' } }`.
+
+<ServiceCatalog lang="fr" />

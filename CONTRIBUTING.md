@@ -29,6 +29,7 @@ week rather than on every push.
 | `packages/cli` | `zeste init` and `zeste add`; the generated components are in `templates/` |
 | `examples/` | Demo apps, also used by the e2e tests |
 | `e2e/` | Playwright tests |
+| `site/` | Website and docs (`pnpm --filter site dev`), English in `src/content/docs/docs`, French in `src/content/docs/fr/docs` |
 
 ## The service catalog
 
@@ -41,5 +42,6 @@ package: do not edit it by hand. A missing or broken service is best fixed in
 - One topic per pull request, with a test: a unit test, or an e2e test when it is about what a browser loads.
 - A change that loads anything earlier, or changes what is stored in the cookie, needs an e2e test proving that
   nothing reaches a third party before consent.
+- A change to the public API comes with its documentation, in English and French.
 - Code, comments and commit messages in English; commits follow [Conventional Commits](https://www.conventionalcommits.org)
   (`feat(core): …`, `fix(cli): …`).

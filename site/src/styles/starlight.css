@@ -1,0 +1,70 @@
+/* Starlight in zeste's identity: cream paper, deep green ink, lemon accent (same tokens as the home page). */
+:root {
+  --sl-font: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --zeste-display: 'Bricolage Grotesque Variable', 'Avenir Next', system-ui, sans-serif;
+  --zeste-lemon: #f5d742;
+
+  /* dark */
+  --sl-color-accent-low: #2a3220;
+  --sl-color-accent: #f5d742;
+  --sl-color-accent-high: #f7e88f;
+  --sl-color-white: #f3f0dc;
+  --sl-color-gray-1: #e9e6d1;
+  --sl-color-gray-2: #c9cfbf;
+  --sl-color-gray-3: #9aa58c;
+  --sl-color-gray-4: #5f6e5f;
+  --sl-color-gray-5: #2f3a31;
+  --sl-color-gray-6: #1b241d;
+  --sl-color-black: #121a14;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #f7f1cf;
+  --sl-color-accent: #18301f;
+  --sl-color-accent-high: #18301f;
+  --sl-color-white: #18301f;
+  --sl-color-gray-1: #23392a;
+  --sl-color-gray-2: #34493a;
+  --sl-color-gray-3: #4d5f4f;
+  --sl-color-gray-4: #7d8a7a;
+  --sl-color-gray-5: #e7e3cf;
+  --sl-color-gray-6: #f6f3e3;
+  --sl-color-gray-7: #fbf9ee;
+  --sl-color-black: #fffdf4;
+}
+
+h1, h2, h3, h4,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: var(--zeste-display);
+  letter-spacing: -0.015em;
+}
+h1#_top { font-weight: 800; letter-spacing: -0.03em; }
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--sl-color-white);
+  text-decoration-color: var(--zeste-lemon);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+.sl-markdown-content a:not(:where(.not-content *)):hover { text-decoration-thickness: 5px; }
+
+:focus-visible { outline-color: var(--zeste-lemon); }
+
+.sl-markdown-content :not(pre) > code {
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+}
+
+/* Asides: a full outline in the page's palette, not a colored side bar. */
+.starlight-aside {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 12px;
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-white);
+}
+.starlight-aside .starlight-aside__title { color: var(--sl-color-white); }
+.starlight-aside--caution { background: #fbefd9; border-color: #e8c98a; }
+.starlight-aside--caution .starlight-aside__title { color: #8a5300; }
+:root:not([data-theme='light']) .starlight-aside--caution { background: #3a2c12; border-color: #6b5222; }
+:root:not([data-theme='light']) .starlight-aside--caution .starlight-aside__title { color: #f0c070; }

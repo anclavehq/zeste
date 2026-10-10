@@ -1,0 +1,101 @@
+---
+import { catalog } from '@zeste/services/catalog';
+
+interface Props {
+  lang: 'en' | 'fr';
+}
+
+const labels = {
+  en: {
+    search: 'Search a service', service: 'Service', fn: 'Function', category: 'Category', options: 'Options',
+    required: 'required', embed: 'embed', exempt: 'no consent needed',
+    preConsent: 'cookieless mode off by default', none: 'No service matches.', count: 'services',
+  },
+  fr: {
+    search: 'Chercher un service', service: 'Service', fn: 'Fonction', category: 'Catégorie', options: 'Options',
+    required: 'obligatoire', embed: 'intégration', exempt: 'sans consentement',
+    preConsent: 'mode sans cookie désactivé par défaut', none: 'Aucun service ne correspond.', count: 'services',
+  },
+}[Astro.props.lang];
+
+const services = [...catalog].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<div class="catalog not-content">
+  <label class="search">
+    <span class="sr-only">{labels.search}</span>
+    <input type="search" placeholder={labels.search} data-catalog-search />
+    <span class="count"><span data-catalog-count>{services.length}</span> {labels.count}</span>
+  </label>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col">{labels.service}</th><th scope="col">{labels.fn}</th><th scope="col">{labels.category}</th><th scope="col">{labels.options}</th></tr>
+      </thead>
+      <tbody>
+        {services.map((s) => (
+          <tr data-search={`${s.name} ${s.key} ${s.type}`.toLowerCase()}>
+            <td>
+              <a href={s.uri} rel="noopener">{s.name}</a>
+              {s.embed && <span class="note">{labels.embed}</span>}
+              {!s.needConsent && <span class="note">{labels.exempt}</span>}
+              {s.preConsentRequests && <span class="note">{labels.preConsent}</span>}
+            </td>
+            <td><code>{s.exportName}()</code></td>
+            <td>{s.type}</td>
+            <td>
+              {s.userKeys.length === 0 ? '—' : s.userKeys.map((key) => (
+                <span class="opt"><code>{key}</code>{s.requiredKeys.includes(key) && <em> {labels.required}</em>}</span>
+              ))}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p data-catalog-empty hidden>{labels.none}</p>
+</div>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-catalog-search]')!;
+  const rows = [...document.querySelectorAll<HTMLTableRowElement>('.catalog tbody tr')];
+  const count = document.querySelector('[data-catalog-count]')!;
+  const empty = document.querySelector<HTMLElement>('[data-catalog-empty]')!;
+  input.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    let shown = 0;
+    for (const row of rows) {
+      const match = row.dataset.search!.includes(query);
+      row.hidden = !match;
+      if (match) shown++;
+    }
+    count.textContent = String(shown);
+    empty.hidden = shown > 0;
+  });
+</script>
+
+<style>
+  .catalog { display: grid; gap: 1rem; margin-top: 1.5rem; }
+  .search { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+  .search input {
+    flex: 1 1 16rem;
+    font: inherit;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+  }
+  .search input:focus-visible { outline: 3px solid var(--zeste-lemon); outline-offset: 2px; }
+  .count { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--sl-color-gray-5); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: var(--sl-text-sm); }
+  th, td { text-align: left; vertical-align: top; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--sl-color-gray-5); }
+  th { color: var(--sl-color-gray-3); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td a { color: var(--sl-color-white); text-decoration-color: var(--zeste-lemon); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  code { font-family: var(--sl-font-mono); font-size: 0.85em; background: var(--sl-color-gray-6); padding: 0.1em 0.35em; border-radius: 4px; white-space: nowrap; }
+  .opt { display: inline-block; margin: 0 0.4rem 0.25rem 0; }
+  .opt em { color: var(--sl-color-gray-3); font-style: normal; font-size: 0.85em; }
+  .note { display: block; margin-top: 0.2rem; color: var(--sl-color-gray-3); font-size: 0.85em; }
+</style>

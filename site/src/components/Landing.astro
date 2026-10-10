@@ -1,0 +1,620 @@
+---
+import '../styles/fonts.css';
+import '../styles/landing.css';
+import { landing } from '../i18n/landing.ts';
+
+interface Props {
+  lang: 'en' | 'fr';
+}
+
+const { lang } = Astro.props;
+const t = landing[lang];
+const c = t.code;
+const base = import.meta.env.BASE_URL;
+const home = (l: string) => base + (l === 'en' ? '' : `${l}/`);
+const docs = base + (lang === 'en' ? '' : `${lang}/`) + 'docs/';
+const asset = (path: string) => base + path;
+const ids = { why: 'why', start: 'start', try: 'try', compliance: 'compliance', migrate: 'migrate', faq: 'faq' };
+
+// Code samples: hand-highlighted (k = keyword, c = comment), same in both languages but for comments and labels.
+const k = (s: string) => `<span class="k">${s}</span>`;
+const cm = (s: string) => `<span class="c">${s}</span>`;
+const code = {
+  consentTs: `${k('import')} { gtag, youtube, matomocloud } ${k('from')} '@zeste/services';
+
+${k('export const')} services = () =&gt; [
+  gtag({ gtagUa: 'G-XXXXXXX' }),
+  youtube(),
+  matomocloud({ matomoId: 1, matomoHost: 'https://example.matomo.cloud/' }),
+];`,
+  configJs: `window.zesteConfig = {
+  services: {
+    gtag: { gtagUa: 'G-XXXXXXX' },
+    youtube: {},
+    matomocloud: { matomoId: 1, matomoHost: 'https://example.matomo.cloud/' },
+  },
+  privacyUrl: '${c.privacy}',
+};`,
+  sveltekitLoad: `${k('import')} { parseConsentCookie } ${k('from')} '@zeste/svelte';
+
+${k('export const')} load = ({ cookies }) =&gt; ({
+  consent: parseConsentCookie(cookies.get('tarteaucitron')),
+});`,
+  nextLayout: `${k('import')} { cookies } ${k('from')} 'next/headers';
+${k('import')} { parseConsentCookie } ${k('from')} '@zeste/react';
+
+${k('export default async function')} RootLayout({ children }) {
+  ${k('const')} consent = parseConsentCookie((${k('await')} cookies()).get('tarteaucitron')?.value);
+  ${k('return')} &lt;html lang="${lang}"&gt;&lt;body&gt;&lt;${k('Consent')} initial={consent}&gt;{children}&lt;/${k('Consent')}&gt;&lt;/body&gt;&lt;/html&gt;;
+}`,
+  nuxtCookie: `${cm('// ' + c.readsServer)}
+${k('const')} cookie = useCookie('tarteaucitron', { decode: (v) =&gt; v });
+${k('const')} consent = parseConsentCookie(cookie.value);`,
+  add: `npx zeste add                  ${cm('# ' + c.trio)}
+npx zeste add --style pelure   ${cm('# ' + c.flat)}`,
+  svelteLayout: `&lt;${k('script')} lang="ts"&gt;
+  ${k('import')} { createZeste, ZesteProvider } ${k('from')} '@zeste/svelte';
+  ${k('import')} { messages } ${k('from')} '@zeste/services/i18n/${c.i18n}';
+  ${k('import')} { CookieBanner, CookiePreferences } ${k('from')} '$lib/components/zeste';
+  ${k('import')} { services } ${k('from')} '$lib/consent';
+
+  ${k('let')} { data, children } = $props();
+  ${k('const')} zeste = createZeste({ services: services(), initial: data.consent, messages });
+&lt;/${k('script')}&gt;
+
+&lt;${k('ZesteProvider')} {zeste}&gt;
+  {@render children()}
+  &lt;${k('CookieBanner')} /&gt;
+  &lt;${k('CookiePreferences')} /&gt;
+  ${cm(`&lt;!-- ${c.reopen} --&gt;`)}
+  &lt;button {@attach zeste.actions.openPreferences}&gt;${c.settings}&lt;/button&gt;
+&lt;/${k('ZesteProvider')}&gt;`,
+  reactConsent: `'use client';
+${k('import')} { useState } ${k('from')} 'react';
+${k('import')} { createZeste, ZesteProvider } ${k('from')} '@zeste/react';
+${k('import')} { messages } ${k('from')} '@zeste/services/i18n/${c.i18n}';
+${k('import')} { CookieBanner, CookiePreferences } ${k('from')} '@/components/zeste';
+${k('import')} { services } ${k('from')} './consent';
+
+${k('export function')} Consent({ initial, children }) {
+  ${k('const')} [zeste] = useState(() =&gt; createZeste({ services: services(), initial, messages }));
+  ${k('return')} (
+    &lt;${k('ZesteProvider')} zeste={zeste}&gt;
+      {children}
+      &lt;${k('CookieBanner')} /&gt;
+      &lt;${k('CookiePreferences')} /&gt;
+      ${cm(`{/* ${c.reopen} */}`)}
+      &lt;button {...zeste.actions.openPreferences}&gt;${c.settings}&lt;/button&gt;
+    &lt;/${k('ZesteProvider')}&gt;
+  );
+}`,
+  vueApp: `&lt;${k('script')} setup lang="ts"&gt;
+${k('import')} { createZeste, parseConsentCookie, ZesteProvider } ${k('from')} '@zeste/vue';
+${k('import')} { messages } ${k('from')} '@zeste/services/i18n/${c.i18n}';
+${k('import')} { CookieBanner, CookiePreferences } ${k('from')} '~/components/zeste';
+${k('import')} { services } ${k('from')} './consent';
+
+${k('const')} cookie = useCookie('tarteaucitron', { decode: (v) =&gt; v });
+${k('const')} zeste = createZeste({ services: services(), initial: parseConsentCookie(cookie.value), messages });
+&lt;/${k('script')}&gt;
+
+&lt;${k('template')}&gt;
+  &lt;${k('ZesteProvider')} :zeste="zeste"&gt;
+    &lt;${k('NuxtPage')} /&gt;
+    &lt;${k('CookieBanner')} /&gt;
+    &lt;${k('CookiePreferences')} /&gt;
+    ${cm(`&lt;!-- ${c.reopen} --&gt;`)}
+    &lt;button v-bind="zeste.actions.openPreferences"&gt;${c.settings}&lt;/button&gt;
+  &lt;/${k('ZesteProvider')}&gt;
+&lt;/${k('template')}&gt;`,
+  htmlHead: `&lt;${k('script')} src="/zeste.config.js"&gt;&lt;/${k('script')}&gt;
+&lt;${k('script')} src="/zeste/zeste.js"&gt;&lt;/${k('script')}&gt;
+
+${cm(`&lt;!-- ${c.anywhere} --&gt;`)}
+&lt;a href="#zeste"&gt;${c.settings}&lt;/a&gt;`,
+  gateSvelte: `&lt;${k('ConsentGate')} service="youtube" embed={{ videoID: 'dQw4w9WgXcQ' }}&gt;
+  {#snippet placeholder({ service, allow })}
+    &lt;${k('CookiePlaceholder')} {service} {allow} /&gt;
+  {/snippet}
+&lt;/${k('ConsentGate')}&gt;`,
+  gateReact: `&lt;${k('ConsentGate')}
+  service="youtube"
+  embed={{ videoID: 'dQw4w9WgXcQ' }}
+  placeholder={(props) =&gt; &lt;${k('CookiePlaceholder')} {...props} /&gt;}
+/&gt;`,
+  gateHtml: `${cm(`&lt;!-- ${c.markup} --&gt;`)}
+&lt;div class="youtube_player" videoID="dQw4w9WgXcQ"&gt;&lt;/div&gt;`,
+  gateVue: `&lt;${k('ConsentGate')} service="youtube" :embed="{ videoID: 'dQw4w9WgXcQ' }"&gt;
+  &lt;${k('template')} #placeholder="props"&gt;&lt;${k('CookiePlaceholder')} v-bind="props" /&gt;&lt;/${k('template')}&gt;
+&lt;/${k('ConsentGate')}&gt;`,
+  record: `createZeste({
+  services,
+  policyVersion: '2026-10',
+  onRecord: (record) =&gt;
+    navigator.sendBeacon('/consent', JSON.stringify(record)),
+});
+${cm('// record = {')}
+${cm("//   id: '9f2c…', date: '2026-10-09T14:03:12Z',")}
+${cm("//   action: 'denyAll', policyVersion: '2026-10',")}
+${cm('//   choices: { gtag: false, youtube: false },')}
+${cm('// }')}`,
+};
+const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedLoad: t.try.failedLoad };
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>{t.title}</title>
+    <meta name="description" content={t.description} />
+    <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" hreflang="en" href={new URL(home('en'), Astro.site)} />
+    <link rel="alternate" hreflang="fr" href={new URL(home('fr'), Astro.site)} />
+    <meta property="og:title" content={t.title} />
+    <meta property="og:description" content={t.description} />
+    <meta property="og:image" content={new URL(asset('media/zeste-presentation.jpg'), Astro.site)} />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="logo" href={home(lang)}>
+        <svg width="28" height="28" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#f5d742" stroke="currentColor" stroke-width="1.5"></circle><g stroke="currentColor" stroke-width="1.2"><line x1="13" y1="3" x2="13" y2="23"></line><line x1="3" y1="13" x2="23" y2="13"></line><line x1="6" y1="6" x2="20" y2="20"></line><line x1="20" y1="6" x2="6" y2="20"></line></g><circle cx="13" cy="13" r="2.2" fill="#fffdf4"></circle></svg>
+        zeste
+      </a>
+      <nav class="sections" aria-label={t.nav.sections}>
+        <a href={`#${ids.why}`}>{t.nav.why}</a>
+        <a href={`#${ids.start}`}>{t.nav.start}</a>
+        <a href={`#${ids.try}`}>{t.nav.try}</a>
+        <a href={`#${ids.compliance}`}>{t.nav.compliance}</a>
+        <a href={`#${ids.migrate}`}>{t.nav.migrate}</a>
+        <a href={`#${ids.faq}`}>{t.nav.faq}</a>
+      </nav>
+      <nav class="site-links" aria-label="zeste">
+        <a href={docs}>{t.nav.docs}</a>
+        <a href={home(t.nav.otherLang)} hreflang={t.nav.otherLang} lang={t.nav.otherLang}>{t.nav.other}</a>
+        <a href="https://github.com/anclavehq/zeste" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        </a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="hero" aria-labelledby="titre">
+        <div class="slice-clip" aria-hidden="true"><div class="slice">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="96" fill="currentColor" opacity="0.35"></circle>
+            <circle cx="100" cy="100" r="84" fill="none" stroke="currentColor" stroke-width="6"></circle>
+            <g fill="currentColor">
+              <path d="M100 100 L100 22 A78 78 0 0 1 155 45 Z" opacity="0.9"></path>
+              <path d="M100 100 L155 45 A78 78 0 0 1 178 100 Z" opacity="0.7"></path>
+              <path d="M100 100 L178 100 A78 78 0 0 1 155 155 Z" opacity="0.9"></path>
+              <path d="M100 100 L155 155 A78 78 0 0 1 100 178 Z" opacity="0.7"></path>
+              <path d="M100 100 L100 178 A78 78 0 0 1 45 155 Z" opacity="0.9"></path>
+              <path d="M100 100 L45 155 A78 78 0 0 1 22 100 Z" opacity="0.7"></path>
+              <path d="M100 100 L22 100 A78 78 0 0 1 45 45 Z" opacity="0.9"></path>
+              <path d="M100 100 L45 45 A78 78 0 0 1 100 22 Z" opacity="0.7"></path>
+            </g>
+            <g stroke="var(--paper)" stroke-width="3"><line x1="100" y1="20" x2="100" y2="180"></line><line x1="20" y1="100" x2="180" y2="100"></line><line x1="43" y1="43" x2="157" y2="157"></line><line x1="157" y1="43" x2="43" y2="157"></line></g>
+            <circle cx="100" cy="100" r="9" fill="var(--paper)"></circle>
+          </svg>
+        </div></div>
+        <div class="hero-copy">
+          <span class="eyebrow">{t.hero.eyebrow}</span>
+          <h1 id="titre" set:html={t.hero.title} />
+          <p class="lead" set:html={t.hero.lead} />
+          <div class="cmd"><code>npx zeste init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
+        </div>
+        <figure class="frame hero-video">
+          <video src={asset('media/zeste-presentation.mp4')} poster={asset('media/zeste-presentation.jpg')} controls preload="metadata" playsinline aria-label={t.hero.video}></video>
+          {t.hero.videoNote && <figcaption>{t.hero.videoNote}</figcaption>}
+        </figure>
+        <div class="stats">
+          {t.hero.stats.map(([n, label]) => <div><strong>{n}</strong><span>{label}</span></div>)}
+        </div>
+      </section>
+
+      <section class="section" id={ids.why} aria-labelledby="t-why">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.why.eyebrow}</span>
+          <h2 id="t-why">{t.why.title}</h2>
+          <p class="soft" set:html={t.why.text} />
+        </div>
+        <div class="compare reveal" id="compare">
+          <img src={asset('img/etape4-1-banniere.jpg')} alt={t.why.afterAlt} width="1280" height="800" />
+          <img class="before" src={asset('img/etape0-1-banniere.jpg')} alt={t.why.beforeAlt} width="1280" height="800" />
+          <span class="tag before before-tag">{t.why.beforeTag}</span>
+          <span class="tag after after-tag">{t.why.afterTag}</span>
+          <div class="divider"></div>
+          <input type="range" min="0" max="100" value="50" step="1" id="compare-range" aria-label={t.why.range} />
+          <span class="knob" aria-hidden="true">⇆</span>
+        </div>
+        <div class="compare-captions">
+          <p set:html={t.why.before} />
+          <p set:html={t.why.after} />
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="t-principles">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.principles.eyebrow}</span>
+          <h2 id="t-principles">{t.principles.title}</h2>
+        </div>
+        <div class="pillars">
+          {t.principles.items.map(([title, text], i) => (
+            <div class="pillar reveal">
+              <h3>{title}</h3>
+              <p set:html={text} />
+              {i === 2 && (
+                <div class="libs">
+                  {['Bits UI', 'Radix', 'Reka UI', 'Ark UI', 'shadcn-svelte', 'shadcn/ui', 'shadcn-vue', t.principles.yourDs].map((l) => <span>{l}</span>)}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div class="diagram" role="img" aria-label={t.principles.diagram}>
+          <div class="layers">
+            {t.principles.layers.map(([name, text], i) => (
+              <div class:list={['layer', { you: i === 0 }]}><b>{name}</b><span set:html={text} /></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id={ids.start} aria-labelledby="t-start">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.start.eyebrow}</span>
+          <h2 id="t-start">{t.start.title}</h2>
+          <div class="fw-pick"><span id="fw-label">{t.start.pick}</span>
+            <div class="seg fw-seg" role="group" aria-labelledby="fw-label">
+              <button type="button" data-v="svelte" aria-pressed="true">SvelteKit</button><button type="button" data-v="react" aria-pressed="false">Next.js</button><button type="button" data-v="vue" aria-pressed="false">Nuxt</button><button type="button" data-v="html" aria-pressed="false">{t.start.none}</button>
+            </div>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step reveal"><div>
+            <h3>{t.start.steps.declare}</h3>
+            <p class="soft" set:html={t.start.steps.declareText} />
+            <div class="stack" data-fw="svelte react vue"><span class="file">lib/consent.ts</span><pre><code set:html={code.consentTs} /></pre></div>
+            <div class="stack" data-fw="html" hidden><span class="file">zeste.config.js</span><pre><code set:html={code.configJs} /></pre></div>
+          </div></div>
+          <div class="step reveal"><div>
+            <h3>{t.start.steps.read}</h3>
+            <p class="soft" data-fw="svelte react vue">{t.start.steps.readText}</p>
+            <div class="stack" data-fw="svelte"><span class="file">src/routes/+layout.server.ts</span><pre><code set:html={code.sveltekitLoad} /></pre></div>
+            <div class="stack" data-fw="react" hidden><span class="file">app/layout.tsx</span><pre><code set:html={code.nextLayout} /></pre></div>
+            <div class="stack" data-fw="vue" hidden><span class="file">app/app.vue</span><pre><code set:html={code.nuxtCookie} /></pre></div>
+            <p class="soft" data-fw="html" hidden>{t.start.steps.readHtml}</p>
+          </div></div>
+          <div class="step reveal"><div>
+            <h3>{t.start.steps.ui}</h3>
+            <p class="soft" data-fw="svelte react vue" set:html={t.start.steps.uiText} />
+            <pre data-fw="svelte react vue"><code set:html={code.add} /></pre>
+            <p class="soft" data-fw="html" hidden set:html={t.start.steps.uiHtml} />
+          </div></div>
+          <div class="step reveal"><div>
+            <h3>{t.start.steps.wire}</h3>
+            <div class="stack" data-fw="svelte"><span class="file">src/routes/+layout.svelte</span><pre><code set:html={code.svelteLayout} /></pre></div>
+            <div class="stack" data-fw="react" hidden><span class="file">app/Consent.tsx</span><pre><code set:html={code.reactConsent} /></pre></div>
+            <div class="stack" data-fw="vue" hidden><span class="file">app/app.vue</span><pre><code set:html={code.vueApp} /></pre></div>
+            <div class="stack" data-fw="html" hidden><span class="file" set:html={c.head} /><pre><code set:html={code.htmlHead} /></pre></div>
+            <p><a href={docs}>{t.start.steps.allDocs}</a></p>
+          </div></div>
+        </div>
+      </section>
+
+      <section class="section" id={ids.try} aria-labelledby="t-try">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.try.eyebrow}</span>
+          <h2 id="t-try">{t.try.title}</h2>
+          <p class="soft" set:html={t.try.text} />
+        </div>
+        <div class="playground reveal">
+          <div class="controls">
+            <div class="control"><span>{t.try.lib}</span>
+              <div class="seg" role="group" aria-label={t.try.lib} data-key="lib">
+                <button type="button" data-v="bits" aria-pressed="true">Bits UI</button><button type="button" data-v="ark" aria-pressed="false">Ark UI</button><button type="button" data-v="shadcn" aria-pressed="false">shadcn-svelte</button>
+              </div></div>
+            <div class="control"><span>{t.try.style}</span>
+              <div class="seg" role="group" aria-label={t.try.style} data-key="style">
+                <button type="button" data-v="zeste" aria-pressed="true">Zeste</button><button type="button" data-v="pelure" aria-pressed="false">Pelure</button>
+              </div></div>
+            <div class="control"><span>{t.try.theme}</span>
+              <div class="seg" role="group" aria-label={t.try.theme} data-key="theme">
+                <button type="button" data-v="clair" aria-pressed="true">{t.try.light}</button><button type="button" data-v="sombre" aria-pressed="false">{t.try.dark}</button>
+              </div></div>
+            <div class="control"><span>{t.try.guard}</span>
+              <button type="button" class="break" id="pg-break" aria-pressed="false">{t.try.break}</button>
+            </div>
+          </div>
+          <div class="pg-layout">
+            <div class="browser">
+              <div class="browser-bar">
+                <i></i><i></i><i></i>
+                <span class="url"><span aria-hidden="true">🔒</span> maison-exemple.fr</span>
+                <button type="button" class="reload" id="pg-reload" aria-label={t.try.reload}>↻</button>
+              </div>
+              <div class="browser-view">
+                <iframe id="pg-frame" title={t.try.frameTitle} sandbox="allow-scripts" hidden></iframe>
+                <img id="pg-fallback" src={asset('img/gal-bits-zeste-clair-banniere.jpg')} alt={t.try.fallbackAlt} width="1280" height="800" />
+                <p class="pg-loading" id="pg-status">{t.try.loading}</p>
+              </div>
+            </div>
+            <aside class="log" aria-labelledby="t-log">
+              <div class="log-head"><h3 id="t-log">{t.try.log}</h3><span class="soft">{t.try.logSub}</span></div>
+              <ol id="pg-log" aria-live="polite"></ol>
+            </aside>
+          </div>
+          <p class="hint">{t.try.hint}</p>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="t-gate">
+        <div class="split">
+          <div class="stack">
+            <span class="eyebrow">{t.gate.eyebrow}</span>
+            <h2 id="t-gate">{t.gate.title}</h2>
+            <p class="soft" set:html={t.gate.text} />
+          </div>
+          <div class="stack">
+            <pre data-fw="svelte"><code set:html={code.gateSvelte} /></pre>
+            <pre data-fw="react" hidden><code set:html={code.gateReact} /></pre>
+            <pre data-fw="html" hidden><code set:html={code.gateHtml} /></pre>
+            <pre data-fw="vue" hidden><code set:html={code.gateVue} /></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id={ids.compliance} aria-labelledby="t-compliance">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.compliance.eyebrow}</span>
+          <h2 id="t-compliance">{t.compliance.title}</h2>
+        </div>
+        <div class="split">
+          <ul class="checks">
+            {t.compliance.checks.map((item) => <li><span set:html={item} /></li>)}
+          </ul>
+          <div class="stack">
+            <h3>{t.compliance.guardTitle}</h3>
+            <p class="soft">{t.compliance.guardText}</p>
+            <figure class="frame">
+              <img src={asset('img/garde-fou.jpg')} alt={t.compliance.guardAlt} loading="lazy" width="1280" height="800" />
+            </figure>
+            <div class="console" role="note"><span class="dim">{t.compliance.console}</span><br />⚠ [zeste/consent] "Deny all" is much smaller than "Accept all" (area 24%, text 9px vs 14px). Both choices must be equally prominent.</div>
+            <p class="note">{t.compliance.guardNote}</p>
+            <h3>{t.compliance.recordTitle}</h3>
+            <pre><code set:html={code.record} /></pre>
+            <p class="note" set:html={t.compliance.recordNote} />
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id={ids.migrate} aria-labelledby="t-migrate">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.migrate.eyebrow}</span>
+          <h2 id="t-migrate">{t.migrate.title}</h2>
+          <p class="soft">{t.migrate.text}</p>
+          <p class="soft" set:html={t.migrate.text2} />
+        </div>
+        <div class="split">
+          <ol class="timeline">
+            {t.migrate.steps.map(([title, text, trap]) => (
+              <li class="tl"><span class="t" set:html={title} /><p set:html={text} />{trap && <span class="trap" set:html={trap} />}</li>
+            ))}
+          </ol>
+          <figure class="frame">
+            <img src={asset('img/etape3-2-preferences.jpg')} alt={t.migrate.imgAlt} loading="lazy" width="1280" height="800" />
+            <figcaption>{t.migrate.caption}</figcaption>
+          </figure>
+        </div>
+        <p><a href={`${docs}guides/migrate/`}>{t.migrate.guide}</a></p>
+      </section>
+
+      <section class="section" aria-labelledby="t-tests">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.tests.eyebrow}</span>
+          <h2 id="t-tests">{t.tests.title}</h2>
+          <p class="soft">{t.tests.text}</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table>
+            <thead><tr>{t.tests.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+            <tbody>
+              {t.tests.rows.map(([what, how, n]) => <tr><td>{what}</td><td set:html={how} /><td class="n">{n}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="t-state">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.state.eyebrow}</span>
+          <h2 id="t-state">{t.state.title}</h2>
+        </div>
+        <div class="state reveal">
+          <div class="stack">
+            <h3>{t.state.ready}</h3>
+            <ul>{t.state.readyItems.map((i) => <li set:html={i} />)}</ul>
+          </div>
+          <div class="stack">
+            <h3>{t.state.next}</h3>
+            <ul>{t.state.nextItems.map((i) => <li set:html={i} />)}</ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id={ids.faq} aria-labelledby="t-faq">
+        <div class="section-head reveal">
+          <span class="eyebrow">{t.faq.eyebrow}</span>
+          <h2 id="t-faq">{t.faq.title}</h2>
+        </div>
+        <div class="faq">
+          {t.faq.items.map(([q, a]) => <details><summary>{q}</summary><p set:html={a} /></details>)}
+        </div>
+      </section>
+
+      <footer>
+        <span set:html={t.footer.about} />
+        <span>{t.footer.credits}</span>
+        <span><a href={docs}>{t.nav.docs}</a> · <a href="https://github.com/anclavehq/zeste">GitHub</a> · <a href="https://github.com/anclavehq/zeste/blob/main/LICENSE">{t.footer.license}</a></span>
+      </footer>
+    </main>
+
+    <script is:inline define:vars={{ pgText, playgroundUrl: asset('playground.html'), imgBase: asset('img/') }}>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Try it: the real zeste code (playground.html, one file) runs in a sandboxed iframe.
+      const pg = { lib: 'bits', style: 'zeste', theme: 'clair', broken: false };
+      const frame = document.getElementById('pg-frame');
+      const fallback = document.getElementById('pg-fallback');
+      const status = document.getElementById('pg-status');
+      const logList = document.getElementById('pg-log');
+      let playgroundHtml;
+      let startedAt = 0;
+      let readyTimer;
+
+      function addLog(kind, text) {
+        const li = document.createElement('li');
+        li.className = kind;
+        const icon = { ok: '✓', deny: '✕', warn: '⚠', info: '•' }[kind] ?? '•';
+        const s = Math.max(0, (performance.now() - startedAt) / 1000);
+        li.innerHTML = '<span class="i" aria-hidden="true"></span><span class="m"></span><span class="t"></span>';
+        li.querySelector('.i').textContent = icon;
+        li.querySelector('.m').textContent = text;
+        li.querySelector('.t').textContent = s.toFixed(1) + ' s';
+        logList.append(li);
+        while (logList.children.length > 40) logList.firstElementChild.remove();
+        logList.scrollTop = logList.scrollHeight;
+      }
+
+      function showFallback(message) {
+        frame.hidden = true;
+        fallback.hidden = false;
+        fallback.src = `${imgBase}gal-${pg.lib}-${pg.style}-${pg.theme}-banniere.jpg`;
+        status.hidden = false;
+        status.textContent = message;
+      }
+
+      async function loadPlayground() {
+        logList.replaceChildren();
+        startedAt = performance.now();
+        status.hidden = false;
+        status.textContent = pgText.loading;
+        try {
+          if (!playgroundHtml) {
+            const response = await fetch(playgroundUrl);
+            if (!response.ok) throw new Error(String(response.status));
+            playgroundHtml = await response.text();
+          }
+          frame.srcdoc = playgroundHtml;
+          clearTimeout(readyTimer);
+          readyTimer = setTimeout(() => showFallback(pgText.failedStart), 8000);
+        } catch {
+          showFallback(pgText.failedLoad);
+        }
+      }
+
+      addEventListener('message', (event) => {
+        if (event.source !== frame.contentWindow) return;
+        const data = event.data;
+        if (!data || data.source !== 'zeste-playground') return;
+        if (data.type === 'ready') {
+          clearTimeout(readyTimer);
+          frame.contentWindow.postMessage({ source: 'zeste-host', type: 'config', config: { ...pg } }, '*');
+          frame.hidden = false;
+          fallback.hidden = true;
+          status.hidden = true;
+        } else if (data.type === 'log') {
+          addLog(data.kind, data.text);
+        }
+      });
+
+      document.getElementById('pg-reload').addEventListener('click', loadPlayground);
+      const breakBtn = document.getElementById('pg-break');
+      breakBtn.addEventListener('click', () => {
+        pg.broken = !pg.broken;
+        breakBtn.setAttribute('aria-pressed', String(pg.broken));
+        loadPlayground();
+      });
+
+      // The demo starts when the section comes near: no work on page load.
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          if (entries.some((e) => e.isIntersecting)) { io.disconnect(); loadPlayground(); }
+        }, { rootMargin: '400px' });
+        io.observe(frame.parentElement);
+      } else {
+        loadPlayground();
+      }
+
+      // Sliding segmented control
+      function placeIndicator(group) {
+        const ind = group.querySelector('.seg-ind');
+        const active = group.querySelector('[aria-pressed="true"]');
+        if (!ind || !active) return;
+        ind.style.width = active.offsetWidth + 'px';
+        ind.style.transform = `translateX(${active.offsetLeft}px)`;
+      }
+      document.querySelectorAll('.seg').forEach((group) => {
+        const ind = document.createElement('span');
+        ind.className = 'seg-ind';
+        group.prepend(ind);
+        group.classList.add('sliding');
+        if (reduce) ind.style.transition = 'none';
+      });
+      const placeAll = () => document.querySelectorAll('.seg').forEach(placeIndicator);
+      document.fonts?.ready.then(placeAll);
+      addEventListener('resize', placeAll);
+      placeAll();
+      document.querySelectorAll('.playground .seg').forEach((group) => {
+        group.querySelectorAll('button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            pg[group.dataset.key] = btn.dataset.v;
+            group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+            placeIndicator(group);
+            loadPlayground();
+          });
+        });
+      });
+
+      // Framework: every code sample on the page follows the choice
+      const fwSeg = document.querySelector('.fw-seg');
+      function showFramework(fw) {
+        fwSeg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === fw)));
+        document.querySelectorAll('[data-fw]').forEach((el) => { el.hidden = !el.dataset.fw.split(' ').includes(fw); });
+        placeIndicator(fwSeg);
+      }
+      fwSeg.querySelectorAll('button').forEach((btn) => btn.addEventListener('click', () => {
+        showFramework(btn.dataset.v);
+        try { localStorage.setItem('zeste-fw', btn.dataset.v); } catch {}
+      }));
+      try {
+        const saved = localStorage.getItem('zeste-fw');
+        if (saved && fwSeg.querySelector(`[data-v="${saved}"]`)) showFramework(saved);
+      } catch {}
+
+      // Before / after: drag with the mouse or the arrow keys
+      const compare = document.getElementById('compare');
+      const range = document.getElementById('compare-range');
+      range.addEventListener('input', () => compare.style.setProperty('--pos', range.value + '%'));
+
+      // Key figures count up to their value (already shown without JS)
+      if (!reduce) {
+        document.querySelectorAll('.stats strong').forEach((el, i) => {
+          const target = Number(el.textContent);
+          if (!target) return;
+          const start = performance.now() + 600 + i * 90;
+          const dur = 1100;
+          const tick = (now) => {
+            const k = Math.min(1, Math.max(0, (now - start) / dur));
+            el.textContent = String(Math.round(target * (1 - Math.pow(1 - k, 3))));
+            if (k < 1) requestAnimationFrame(tick);
+          };
+          el.textContent = '0';
+          requestAnimationFrame(tick);
+        });
+      }
+    </script>
+  </body>
+</html>

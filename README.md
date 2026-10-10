@@ -3,6 +3,8 @@
 **Headless** cookie-consent management for the web: it keeps the service catalog of
 [tarteaucitron.js](https://github.com/AmauriC/tarteaucitron.js) (MIT) and replaces its engine and its UI.
 
+**[Website and documentation](https://anclavehq.github.io/zeste/)** · [Documentation en français](https://anclavehq.github.io/zeste/fr/docs/)
+
 | Package | Role |
 |---|---|
 | `@zeste/core` | Framework-free engine: state, cookie (tarteaucitron format), plugins (Google Consent Mode v2), tarteaucitron shim |
@@ -22,6 +24,7 @@
 | `examples/skin-react-radix`, `skin-react-ark`, `skin-react-shadcn` | The same, with React and Next.js |
 | `examples/skin-vue-reka`, `skin-vue-ark`, `skin-vue-shadcn` | The same, with Vue and Nuxt |
 | `e2e` | Chromium tests (Playwright): the whole catalog with the network intercepted + real services on the real network |
+| `site` | The website and its documentation (Astro + Starlight, English and French) |
 
 ```sh
 pnpm install
