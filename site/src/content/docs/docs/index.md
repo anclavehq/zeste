@@ -23,7 +23,7 @@ languages, and replaces its engine and its interface. You build the banner with 
 ## What you handle
 
 In Svelte, React and Vue, zeste does not draw anything. You write the banner and the preferences with your
-components. `npx zeste add` writes a first version with your UI library, and the files are yours to change.
+components. `npx @zeste/cli add` writes a first version with your UI library, and the files are yours to change.
 
 zeste ships tarteaucitron's translations of the banner texts. Your privacy policy, and the description of what each
 cookie is for, are up to you.
@@ -38,7 +38,7 @@ cookie is for, are up to you.
 | `@zeste/react` | React 18 and 19 bindings, for Next.js and client-only apps |
 | `@zeste/vue` | Vue 3 bindings, for Nuxt and client-only apps |
 | `@zeste/browser` | A `<script>` tag for sites without a framework, with a banner included |
-| `zeste` | The CLI, with `zeste init` and `zeste add` |
+| `@zeste/cli` | The CLI, with `zeste init` and `zeste add` |
 
 ## Where to start
 

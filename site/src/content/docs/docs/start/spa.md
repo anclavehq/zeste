@@ -5,7 +5,7 @@ description: zeste in a client-only app (Vite) with Svelte, React or Vue, or wit
 
 Without a server, zeste reads the choice from the cookie in the browser, so you leave out `initial`. Everything else is the
 same as in the [SvelteKit](../../start/sveltekit/), [Next.js](../../start/nextjs/) and [Nuxt](../../start/nuxt/)
-guides, including `npx zeste add`.
+guides, including `npx @zeste/cli add`.
 
 ```svelte
 <!-- Svelte -->

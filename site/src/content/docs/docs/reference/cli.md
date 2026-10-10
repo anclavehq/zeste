@@ -8,8 +8,8 @@ description: zeste init and zeste add.
 Finds the services the project already uses and writes their declaration for zeste.
 
 ```sh
-npx zeste init             # writes lib/consent.ts (in src/, Nuxt's app/ or the root)
-npx zeste init --dry-run   # report only
+npx @zeste/cli init             # writes lib/consent.ts (in src/, Nuxt's app/ or the root)
+npx @zeste/cli init --dry-run   # report only
 ```
 
 It reads the project once and recognizes:
@@ -34,8 +34,8 @@ then add the missing services from the [catalog](../services/).
 Copies a banner, preferences and a placeholder written with your UI library.
 
 ```sh
-npx zeste add
-npx zeste add --ui ark --style pelure
+npx @zeste/cli add
+npx @zeste/cli add --ui ark --style pelure
 ```
 
 | Option | |

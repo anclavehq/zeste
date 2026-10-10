@@ -7,7 +7,7 @@ description: Installer zeste dans une app Next.js (App Router), avec le choix lu
 
 ```sh
 npm install @zeste/react @zeste/core @zeste/services
-npx zeste init
+npx @zeste/cli init
 ```
 
 `zeste init` écrit `lib/consent.ts` (dans `src/` si le projet en a un) avec les services qu'il trouve. Vous pouvez
@@ -43,8 +43,8 @@ export default async function RootLayout({ children }) {
 ## 3. Générer l'interface
 
 ```sh
-npx zeste add                 # détecte Radix, Ark UI ou shadcn/ui
-npx zeste add --style pelure
+npx @zeste/cli add                 # détecte Radix, Ark UI ou shadcn/ui
+npx @zeste/cli add --style pelure
 ```
 
 `CookieBanner`, `CookiePreferences` et `CookiePlaceholder` sont écrits dans `components/zeste/`.

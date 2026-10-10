@@ -15,11 +15,11 @@ balisage `youtube_player` continuent de fonctionner.
 
 ## App Svelte, React ou Vue
 
-1. Retirez tarteaucitron et déclarez les mêmes services. `npx zeste init` lit votre configuration tarteaucitron
+1. Retirez tarteaucitron et déclarez les mêmes services. `npx @zeste/cli init` lit votre configuration tarteaucitron
    et l'écrit pour zeste. Il reprend les services, les options `tarteaucitron.user.*`, le nom et le domaine du
    cookie, et le Consent Mode. Son rapport liste ce qu'il faut retirer et ce qu'il reste à compléter, avec le
    fichier et la ligne de chaque élément.
-2. Lancez `npx zeste add` pour générer la bannière et les préférences.
+2. Lancez `npx @zeste/cli add` pour générer la bannière et les préférences.
 3. Remplacez les boutons, la modale et les interrupteurs générés par les composants de votre design system. Voir
    [Votre propre interface](../ui/).
 4. Mettez les vidéos et les cartes intégrées derrière `<ConsentGate>`. L'ancien balisage `.youtube_player`

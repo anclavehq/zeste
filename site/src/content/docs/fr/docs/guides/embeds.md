@@ -34,7 +34,7 @@ rendu côté serveur, et monter un nouveau contenu ne recharge pas ceux déjà e
 - Le placeholder reçoit `service` (nom, catégorie, lien vers sa politique de confidentialité) et `allow`, qui
   accepte ce service uniquement.
 
-`npx zeste add` écrit un composant `CookiePlaceholder` pour démarrer.
+`npx @zeste/cli add` écrit un composant `CookiePlaceholder` pour démarrer.
 
 ## Votre propre contenu
 

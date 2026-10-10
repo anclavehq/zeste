@@ -23,7 +23,7 @@ page:
 <script src="/zeste/zeste.js"></script>
 ```
 
-`npx zeste init` run in a folder without a `package.json` writes this configuration as `zeste.config.js`, from the
+`npx @zeste/cli init` run in a folder without a `package.json` writes this configuration as `zeste.config.js`, from the
 scripts it finds in your pages.
 
 A round button to reopen the preferences appears once the visitor has chosen. Any link to `#zeste` opens them too:

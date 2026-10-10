@@ -4,7 +4,7 @@ description: zeste dans une app sans serveur (Vite) avec Svelte, React ou Vue, o
 ---
 
 Sans serveur, zeste lit le choix dans le cookie, dans le navigateur, donc vous n'indiquez pas `initial`. Tout le reste est
-identique aux guides [SvelteKit](../sveltekit/), [Next.js](../nextjs/) et [Nuxt](../nuxt/), `npx zeste add` compris.
+identique aux guides [SvelteKit](../sveltekit/), [Next.js](../nextjs/) et [Nuxt](../nuxt/), `npx @zeste/cli add` compris.
 
 ```svelte
 <!-- Svelte -->

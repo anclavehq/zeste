@@ -8,9 +8,9 @@ zeste is headless. It gives you a state and actions, and you build the interface
 ## Start from a generated variant
 
 ```sh
-npx zeste add                  # detects the framework, then shadcn (components.json), Ark UI, Bits UI / Radix / Reka UI
-npx zeste add --ui ark         # or explicitly
-npx zeste add --style pelure   # zeste (default, understated, lemon accent) | pelure (flat, thick outlines)
+npx @zeste/cli add                  # detects the framework, then shadcn (components.json), Ark UI, Bits UI / Radix / Reka UI
+npx @zeste/cli add --ui ark         # or explicitly
+npx @zeste/cli add --style pelure   # zeste (default, understated, lemon accent) | pelure (flat, thick outlines)
 ```
 
 | Framework | `--ui` |

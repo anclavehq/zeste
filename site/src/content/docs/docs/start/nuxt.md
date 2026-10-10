@@ -7,7 +7,7 @@ description: Set up zeste in a Nuxt app, with the choice read on the server.
 
 ```sh
 npm install @zeste/vue @zeste/core @zeste/services
-npx zeste init
+npx @zeste/cli init
 ```
 
 `zeste init` writes `app/lib/consent.ts` with the services it finds. You can also write it yourself:
@@ -22,8 +22,8 @@ export const services = () => [gtag({ gtagUa: 'G-XXXXXXX' }), youtube()];
 ## 2. Generate the interface
 
 ```sh
-npx zeste add                 # detects Reka UI, Ark UI or shadcn-vue
-npx zeste add --style pelure
+npx @zeste/cli add                 # detects Reka UI, Ark UI or shadcn-vue
+npx @zeste/cli add --style pelure
 ```
 
 This writes `CookieBanner`, `CookiePreferences` and `CookiePlaceholder` into `app/components/zeste/`.

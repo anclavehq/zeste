@@ -24,7 +24,7 @@ vos propres composants.
 ## Ce qui reste à votre charge
 
 En Svelte, React et Vue, zeste ne dessine rien. Vous écrivez la bannière et les préférences avec vos composants.
-`npx zeste add` en écrit une première version avec votre lib d'UI, et ces fichiers sont à vous.
+`npx @zeste/cli add` en écrit une première version avec votre lib d'UI, et ces fichiers sont à vous.
 
 zeste fournit les traductions de tarteaucitron pour les textes de la bannière. Votre politique de confidentialité
 et la description de la finalité de chaque cookie restent à votre charge.
@@ -39,7 +39,7 @@ et la description de la finalité de chaque cookie restent à votre charge.
 | `@zeste/react` | Bindings React 18 et 19, pour Next.js et les apps sans serveur |
 | `@zeste/vue` | Bindings Vue 3, pour Nuxt et les apps sans serveur |
 | `@zeste/browser` | Une balise `<script>` pour les sites sans framework, bannière comprise |
-| `zeste` | La CLI, avec `zeste init` et `zeste add` |
+| `@zeste/cli` | La CLI, avec `zeste init` et `zeste add` |
 
 ## Par où commencer
 

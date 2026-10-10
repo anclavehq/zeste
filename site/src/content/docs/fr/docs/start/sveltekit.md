@@ -7,7 +7,7 @@ description: Installer zeste dans une app SvelteKit, avec le choix lu côté ser
 
 ```sh
 npm install @zeste/svelte @zeste/core @zeste/services
-npx zeste init
+npx @zeste/cli init
 ```
 
 `zeste init` lit le projet et écrit `src/lib/consent.ts` avec les services qu'il trouve (une config tarteaucitron,
@@ -39,8 +39,8 @@ Le premier rendu montre alors déjà le bon état. Un visiteur qui a déjà choi
 ## 3. Générer l'interface
 
 ```sh
-npx zeste add                 # détecte Bits UI, Ark UI ou shadcn-svelte
-npx zeste add --style pelure  # l'autre style
+npx @zeste/cli add                 # détecte Bits UI, Ark UI ou shadcn-svelte
+npx @zeste/cli add --style pelure  # l'autre style
 ```
 
 `CookieBanner`, `CookiePreferences` et `CookiePlaceholder` sont écrits dans `src/lib/components/zeste/`. Voir

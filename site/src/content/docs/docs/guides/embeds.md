@@ -34,7 +34,7 @@ renders the placeholder. Adding a new embed to the page does not reload the ones
 - The placeholder receives `service` (name, category, privacy policy link) and `allow`, which accepts this
   service only.
 
-`npx zeste add` writes a `CookiePlaceholder` component to start from.
+`npx @zeste/cli add` writes a `CookiePlaceholder` component to start from.
 
 ## Your own content
 

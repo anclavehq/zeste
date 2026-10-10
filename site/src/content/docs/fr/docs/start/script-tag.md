@@ -23,7 +23,7 @@ chaque page :
 <script src="/zeste/zeste.js"></script>
 ```
 
-`npx zeste init`, lancé dans un dossier sans `package.json`, écrit cette configuration dans `zeste.config.js` à
+`npx @zeste/cli init`, lancé dans un dossier sans `package.json`, écrit cette configuration dans `zeste.config.js` à
 partir des scripts trouvés dans vos pages.
 
 Un bouton rond pour rouvrir les préférences apparaît une fois le choix fait. Tout lien vers `#zeste` les ouvre

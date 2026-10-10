@@ -7,7 +7,7 @@ description: Set up zeste in a SvelteKit app, with the choice read on the server
 
 ```sh
 npm install @zeste/svelte @zeste/core @zeste/services
-npx zeste init
+npx @zeste/cli init
 ```
 
 `zeste init` reads the project and writes `src/lib/consent.ts` with the services it finds (a tarteaucitron
@@ -39,8 +39,8 @@ The first render then already shows the right state. A visitor who has already c
 ## 3. Generate the interface
 
 ```sh
-npx zeste add                 # detects Bits UI, Ark UI or shadcn-svelte
-npx zeste add --style pelure  # the other style
+npx @zeste/cli add                 # detects Bits UI, Ark UI or shadcn-svelte
+npx @zeste/cli add --style pelure  # the other style
 ```
 
 This writes `CookieBanner`, `CookiePreferences` and `CookiePlaceholder` into `src/lib/components/zeste/`. See

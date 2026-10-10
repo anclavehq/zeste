@@ -50,8 +50,8 @@ ${k('export default async function')} RootLayout({ children }) {
   nuxtCookie: `${cm('// ' + c.readsServer)}
 ${k('const')} cookie = useCookie('tarteaucitron', { decode: (v) =&gt; v });
 ${k('const')} consent = parseConsentCookie(cookie.value);`,
-  add: `npx zeste add                  ${cm('# ' + c.trio)}
-npx zeste add --style pelure   ${cm('# ' + c.flat)}`,
+  add: `npx @zeste/cli add                  ${cm('# ' + c.trio)}
+npx @zeste/cli add --style pelure   ${cm('# ' + c.flat)}`,
   svelteLayout: `&lt;${k('script')} lang="ts"&gt;
   ${k('import')} { createZeste, ZesteProvider } ${k('from')} '@zeste/svelte';
   ${k('import')} { messages } ${k('from')} '@zeste/services/i18n/${c.i18n}';
@@ -203,7 +203,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
           <h1 id="titre">{t.hero.title}</h1>
           <p class="lead" set:html={t.hero.lead} />
           <p class="lead">{t.hero.facts}</p>
-          <div class="cmd"><code>npx zeste init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
+          <div class="cmd"><code>npx @zeste/cli init</code><a class="docs-link" href={docs}>{t.hero.docs}</a><span class="status">{t.hero.status}</span></div>
         </div>
         <figure class="hero-video">
           <div class="hero-player">

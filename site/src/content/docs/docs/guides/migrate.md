@@ -14,11 +14,11 @@ Replace tarteaucitron's `<script>` tag with zeste's [script tag](../../start/scr
 
 ## App with Svelte, React or Vue
 
-1. Remove tarteaucitron and declare the same services. `npx zeste init` reads your tarteaucitron configuration
+1. Remove tarteaucitron and declare the same services. `npx @zeste/cli init` reads your tarteaucitron configuration
    and writes it for zeste. It picks up the services, the `tarteaucitron.user.*` options, the cookie name and
    domain, and Consent Mode. Its report lists what to remove and what to fill in, with the file and line of each
    item.
-2. Run `npx zeste add` to generate the banner and the preferences.
+2. Run `npx @zeste/cli add` to generate the banner and the preferences.
 3. Replace the generated buttons, dialog and switches with your design system's components. See
    [Your own UI](../ui/).
 4. Put embedded videos and maps behind `<ConsentGate>`. The old `.youtube_player` markup keeps working, and
