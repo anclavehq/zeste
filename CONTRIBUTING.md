@@ -15,8 +15,8 @@ pnpm --filter e2e test                           # builds every example, then ru
 ```
 
 `pnpm --filter e2e exec playwright test --project=<name>` runs one project (`harness`, `sveltekit`, `skin-bits`…).
-The `real-network` project loads real Google, YouTube and Matomo scripts: it depends on them and is not run in
-CI on every push.
+The `real-network` project loads real Google, YouTube and Matomo scripts: it depends on them, so CI runs it once a
+week rather than on every push.
 
 ## Where things live
 

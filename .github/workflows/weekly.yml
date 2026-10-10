@@ -1,0 +1,50 @@
+name: Weekly
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  real-network:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter e2e exec playwright install --with-deps chromium
+      - run: pnpm --filter e2e exec vite build harness --outDir ../dist --emptyOutDir
+      - run: pnpm --filter e2e exec playwright test --project=real-network
+        env:
+          ZESTE_REAL_NETWORK: '1'
+
+  tarteaucitron:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Open an issue when tarteaucitron.js has a new release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(node -p "require('./packages/services/package.json').devDependencies.tarteaucitronjs")
+          latest=$(npm view tarteaucitronjs version)
+          echo "pinned $current, latest $latest"
+          [ "$current" = "$latest" ] && exit 0
+          title="Update the catalog to tarteaucitron.js $latest"
+          if gh issue list --state open --search "in:title \"$title\"" --json number --jq 'length' | grep -qv '^0$'; then exit 0; fi
+          gh issue create --title "$title" --body "tarteaucitron.js $latest is out (the catalog is generated from $current).
+
+          1. Bump \`tarteaucitronjs\` to \`$latest\` in \`packages/services\` and \`packages/core\`.
+          2. \`pnpm --filter @zeste/services generate\`
+          3. \`pnpm --filter e2e test\`: the catalog tests check every service again.
+
+          Changelog: https://github.com/AmauriC/tarteaucitron.js/releases"
