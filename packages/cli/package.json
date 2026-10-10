@@ -1,6 +1,6 @@
 {
   "name": "@zeste/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "zeste CLI: detects a project's services and copies an editable consent banner, preferences and placeholder into your project. Ready-made for Svelte, React and Vue with Bits UI, Radix, Reka UI, Ark UI and shadcn; zeste itself works with any UI",
   "type": "module",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "cli"
   ],
   "bin": {
-    "zeste": "./src/cli.ts"
+    "zeste": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -45,9 +45,5 @@
   "dependencies": {
     "@zeste/services": "workspace:*"
   },
-  "publishConfig": {
-    "bin": {
-      "zeste": "./dist/cli.js"
-    }
-  }
+  "publishConfig": {}
 }
