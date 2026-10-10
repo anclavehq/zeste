@@ -7,7 +7,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         catalog: resolve(__dirname, 'catalog.html'),
-        client: resolve(__dirname, 'client.html'),
+        'real-network': resolve(__dirname, 'real-network.html'),
         i18n: resolve(__dirname, 'i18n.html'),
       },
     },

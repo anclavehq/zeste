@@ -5,7 +5,7 @@ declare global {
   interface Window {
     /** `catalog.html` harness */
     __catalog?: { consent: ConsentManager; errors: string[]; probe: () => string };
-    /** `client.html` harness */
+    /** `real-network.html` harness */
     __zeste?: { consent: ConsentManager };
     /** Set by `start()`: the app is hydrated and the engine is running. */
     __zesteManifest?: ZesteManifest[];

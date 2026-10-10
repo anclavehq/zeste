@@ -1,5 +1,5 @@
 /**
- * The client's services (GA4, YouTube, Matomo Cloud) on the real network, without interception:
+ * Common services (GA4, YouTube, Matomo Cloud) on the real network, without interception:
  * real third-party scripts, real cookies. What a regulator inspection would observe.
  */
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
@@ -18,7 +18,7 @@ const cookieNames = async (context: BrowserContext) => (await context.cookies())
 
 test('before any choice: no third-party request, no third-party cookie', async ({ page, context }) => {
   const requests = recordThirdParties(page);
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
   await expect(page.locator('#banner')).toBeVisible();
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(1500);
@@ -31,7 +31,7 @@ test('before any choice: no third-party request, no third-party cookie', async (
 
 test('"Tout accepter": GA4, YouTube and Matomo really load', async ({ page, context }) => {
   const requests = recordThirdParties(page);
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
 
   const gtagLoaded = page.waitForResponse((r) => r.url().includes('googletagmanager.com/gtag/js') && r.ok());
   const matomoLoaded = page.waitForResponse((r) => r.url().startsWith('https://cdn.matomo.cloud/matomo.js') && r.ok());
@@ -65,7 +65,7 @@ test('"Tout accepter": GA4, YouTube and Matomo really load', async ({ page, cont
 
 test('"Tout refuser": nothing loads, even after a while', async ({ page, context }) => {
   const requests = recordThirdParties(page);
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
   await page.click('#deny');
   await page.waitForTimeout(2000);
 
@@ -75,7 +75,7 @@ test('"Tout refuser": nothing loads, even after a while', async ({ page, context
 });
 
 test('the choice is remembered: on reload, no banner and the accepted services load', async ({ page }) => {
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
   await page.click('#accept');
   const gtagLoaded = page.waitForResponse((r) => r.url().includes('googletagmanager.com/gtag/js'));
   await page.reload();
@@ -85,7 +85,7 @@ test('the choice is remembered: on reload, no banner and the accepted services l
 });
 
 test('GA4 consent withdrawal: _ga cookies removed and reload flagged', async ({ page, context }) => {
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
   await page.click('#accept');
   await expect.poll(() => cookieNames(context), { timeout: 10_000 }).toContain('_ga');
 
@@ -100,7 +100,7 @@ test('GA4 consent withdrawal: _ga cookies removed and reload flagged', async ({ 
 });
 
 test('YouTube consent withdrawal: the video disappears without a reload', async ({ page }) => {
-  await page.goto('/client.html');
+  await page.goto('/real-network.html');
   await page.click('#accept');
   await expect(page.locator('.youtube_player iframe')).toBeVisible();
   await page.evaluate(() => window.__zeste!.consent.deny('youtube'));

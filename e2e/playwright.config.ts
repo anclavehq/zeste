@@ -12,7 +12,13 @@ export default defineConfig({
   projects: [
     {
       name: 'harness',
-      testMatch: /(catalog|client|i18n)\.spec\.ts/,
+      testMatch: /(catalog|i18n)\.spec\.ts/,
+      use: { baseURL: 'http://localhost:4317' },
+    },
+    // Real third parties on the real network: depends on them, run apart from the rest (`--project=real-network`)
+    {
+      name: 'real-network',
+      testMatch: /real-network\.spec\.ts/,
       use: { baseURL: 'http://localhost:4317' },
     },
     // The same app with each binding, with and without a server framework

@@ -7,12 +7,3 @@ e2e/dist
 examples/*/build
 .svelte-kit
 examples/playground/dist
-video/.venv
-video/voice
-video/audio
-video/frames
-video/preview
-video/composition.html
-video/sfx.json
-video/*.mp4
-video/poster.jpg
