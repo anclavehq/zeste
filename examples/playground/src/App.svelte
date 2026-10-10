@@ -25,15 +25,24 @@
 	const skin = skins[`${config.lib}-${config.style}`];
 
 	/** Simulated service: instead of loading a third-party script, it writes to the log. */
-	function simulated(key: string, name: string, category: string, needsConsent = true): ServiceDefinition {
+	function simulated(key: string, name: string, category: string, needsConsent = true, embed = false): ServiceDefinition {
 		return {
 			key,
 			name,
 			category,
 			needsConsent,
+			// An embed (like the real YouTube service) goes back behind its placeholder on withdrawal, without a reload.
+			embed,
 			cookies: [],
 			onGrant: () =>
-				log('ok', needsConsent ? `${name} : script chargé` : `${name} : chargé d’office (exempté de consentement)`)
+				log(
+					'ok',
+					embed
+						? `${name} : vidéo affichée`
+						: needsConsent
+							? `${name} : script chargé`
+							: `${name} : chargé d’office (exempté de consentement)`
+				)
 		};
 	}
 
@@ -41,7 +50,7 @@
 		services: [
 			simulated('gtag', 'Google Analytics (GA4)', 'analytic'),
 			simulated('matomocloud', 'Matomo Cloud', 'analytic'),
-			simulated('youtube', 'YouTube', 'video'),
+			simulated('youtube', 'YouTube', 'video', true, true),
 			simulated('plausible', 'Plausible', 'analytic', false)
 		],
 		storage: memoryStorage(),
