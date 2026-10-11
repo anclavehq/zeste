@@ -1,7 +1,14 @@
 ---
 import '../styles/fonts.css';
 import '../styles/landing.css';
+import { Image, getImage } from 'astro:assets';
 import { landing } from '../i18n/landing.ts';
+import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+import bodyFont from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
+import after from '../assets/landing/etape4-1-banniere.jpg';
+import before from '../assets/landing/etape0-1-banniere.jpg';
+import guard from '../assets/landing/garde-fou.jpg';
+import preferences from '../assets/landing/etape3-2-preferences.jpg';
 
 interface Props {
   lang: 'en' | 'fr';
@@ -14,6 +21,21 @@ const base = import.meta.env.BASE_URL;
 const home = (l: string) => base + (l === 'en' ? '' : `${l}/`);
 const docs = base + (lang === 'en' ? '' : `${lang}/`) + 'docs/';
 const asset = (path: string) => base + path;
+
+// Responsive variants: full width of the page, or half of it in two-column blocks.
+const widths = [480, 800, 1280];
+const fullSizes = '(min-width: 1100px) 1040px, calc(100vw - 40px)';
+const halfSizes = '(min-width: 1100px) 520px, calc(100vw - 40px)';
+const gallery = Object.fromEntries(
+  await Promise.all(
+    Object.entries(import.meta.glob<{ default: ImageMetadata }>('../assets/landing/gal-*.jpg', { eager: true })).map(async ([path, mod]) => {
+      const img = await getImage({ src: mod.default, widths, format: 'webp' });
+      return [path.match(/gal-(.+)-banniere/)![1], { src: img.src, srcset: img.srcSet.attribute }];
+    }),
+  ),
+);
+const pgFallback = gallery['bits-zeste-clair'];
+
 const ids = { why: 'why', start: 'start', try: 'try', compliance: 'compliance', migrate: 'migrate', faq: 'faq' };
 
 // Code samples: hand-highlighted (k = keyword, c = comment), same in both languages but for comments and labels.
@@ -149,6 +171,8 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>{t.title}</title>
     <meta name="description" content={t.description} />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
     <link rel="alternate" hreflang="en" href={new URL(home('en'), Astro.site)} />
     <link rel="alternate" hreflang="fr" href={new URL(home('fr'), Astro.site)} />
@@ -236,10 +260,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
         </div>
         <figure class="hero-video">
           <div class="hero-player">
-            <video id="hero-video" autoplay muted loop playsinline preload="auto" poster={asset('media/hero-loop.jpg')} aria-label={t.hero.video}>
-              <source src={asset('media/hero-loop.webm')} type="video/webm" />
-              <source src={asset('media/hero-loop.mp4')} type="video/mp4" />
-            </video>
+            <video id="hero-video" autoplay muted loop playsinline preload="none" poster={asset('media/hero-loop-poster.webp')} aria-label={t.hero.video} data-base={asset('media/hero-loop')}></video>
             <button type="button" class="hero-toggle" id="hero-toggle" aria-label={t.hero.pause} data-pause={t.hero.pause} data-play={t.hero.play}>
               <svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="currentColor"></rect><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="currentColor"></rect></svg>
               <svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9.5-5.5z" fill="currentColor"></path></svg>
@@ -255,8 +276,8 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
           <p class="soft" set:html={t.why.text} />
         </div>
         <div class="compare reveal" id="compare">
-          <img src={asset('img/etape4-1-banniere.jpg')} alt={t.why.afterAlt} width="1280" height="800" />
-          <img class="before" src={asset('img/etape0-1-banniere.jpg')} alt={t.why.beforeAlt} width="1280" height="800" />
+          <Image src={after} alt={t.why.afterAlt} widths={widths} sizes={fullSizes} format="webp" />
+          <Image class="before" src={before} alt={t.why.beforeAlt} widths={widths} sizes={fullSizes} format="webp" />
           <span class="tag before before-tag">{t.why.beforeTag}</span>
           <span class="tag after after-tag">{t.why.afterTag}</span>
           <div class="divider"></div>
@@ -368,7 +389,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
               </div>
               <div class="browser-view">
                 <iframe id="pg-frame" title={t.try.frameTitle} sandbox="allow-scripts" hidden></iframe>
-                <img id="pg-fallback" src={asset('img/gal-bits-zeste-clair-banniere.jpg')} alt={t.try.fallbackAlt} width="1280" height="800" />
+                <img id="pg-fallback" src={pgFallback.src} srcset={pgFallback.srcset} sizes="(min-width: 1100px) 724px, calc(100vw - 40px)" loading="lazy" alt={t.try.fallbackAlt} width="1280" height="800" />
                 <p class="pg-loading" id="pg-status">{t.try.loading}</p>
               </div>
             </div>
@@ -408,7 +429,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
             <h3>{t.compliance.guardTitle}</h3>
             <p class="soft">{t.compliance.guardText}</p>
             <figure class="frame">
-              <img src={asset('img/garde-fou.jpg')} alt={t.compliance.guardAlt} loading="lazy" width="1280" height="800" />
+              <Image src={guard} alt={t.compliance.guardAlt} widths={widths} sizes={halfSizes} format="webp" />
             </figure>
             <div class="console" role="note"><span class="dim">{t.compliance.console}</span><br />⚠ [zeste/consent] "Deny all" is much smaller than "Accept all" (area 24%, text 9px vs 14px). Both choices must be equally prominent.</div>
             <p class="note">{t.compliance.guardNote}</p>
@@ -432,7 +453,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
             ))}
           </ol>
           <figure class="frame">
-            <img src={asset('img/etape3-2-preferences.jpg')} alt={t.migrate.imgAlt} loading="lazy" width="1280" height="800" />
+            <Image src={preferences} alt={t.migrate.imgAlt} widths={widths} sizes={halfSizes} format="webp" />
             <figcaption>{t.migrate.caption}</figcaption>
           </figure>
         </div>
@@ -487,7 +508,7 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
       </footer>
     </main>
 
-    <script is:inline define:vars={{ pgText, playgroundUrl: asset('playground.html'), imgBase: asset('img/') }}>
+    <script is:inline define:vars={{ pgText, playgroundUrl: asset('playground.html'), gallery }}>
       const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Try it: the real zeste code (playground.html, one file) runs in a sandboxed iframe.
@@ -517,7 +538,9 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
       function showFallback(message) {
         frame.hidden = true;
         fallback.hidden = false;
-        fallback.src = `${imgBase}gal-${pg.lib}-${pg.style}-${pg.theme}-banniere.jpg`;
+        const shot = gallery[`${pg.lib}-${pg.style}-${pg.theme}`];
+        fallback.srcset = shot.srcset;
+        fallback.src = shot.src;
         status.hidden = false;
         status.textContent = message;
       }
@@ -587,12 +610,16 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
         ind.className = 'seg-ind';
         group.prepend(ind);
         group.classList.add('sliding');
-        if (reduce) ind.style.transition = 'none';
+        ind.style.transition = 'none';
       });
       const placeAll = () => document.querySelectorAll('.seg').forEach(placeIndicator);
-      document.fonts?.ready.then(placeAll);
       addEventListener('resize', placeAll);
       placeAll();
+      // First placement without animation, once the fonts have set the button widths
+      (document.fonts?.ready ?? Promise.resolve()).then(() => {
+        placeAll();
+        if (!reduce) requestAnimationFrame(() => document.querySelectorAll('.seg-ind').forEach((ind) => { ind.style.transition = ''; }));
+      });
       document.querySelectorAll('.playground .seg').forEach((group) => {
         group.querySelectorAll('button').forEach((btn) => {
           btn.addEventListener('click', () => {
@@ -620,17 +647,36 @@ const pgText = { loading: t.try.loading, failedStart: t.try.failedStart, failedL
         if (saved && fwSeg.querySelector(`[data-v="${saved}"]`)) showFramework(saved);
       } catch {}
 
-      // Hero loop: a pause button (motion longer than 5 s), and no autoplay when the visitor asks for reduced motion
+      // Hero loop: loaded after the page (lighter file on small screens), a pause button (motion longer than 5 s),
+      // and nothing downloaded until asked when the visitor prefers reduced motion
       const heroVideo = document.getElementById('hero-video');
       const heroToggle = document.getElementById('hero-toggle');
+      function loadHero() {
+        if (heroVideo.childElementCount) return;
+        const file = heroVideo.dataset.base + (matchMedia('(max-width: 760px)').matches ? '-960' : '');
+        for (const ext of ['webm', 'mp4']) {
+          const source = document.createElement('source');
+          source.src = `${file}.${ext}`;
+          source.type = `video/${ext}`;
+          heroVideo.append(source);
+        }
+        heroVideo.load();
+      }
       const syncToggle = () => {
         heroToggle.classList.toggle('paused', heroVideo.paused);
         heroToggle.setAttribute('aria-label', heroVideo.paused ? heroToggle.dataset.play : heroToggle.dataset.pause);
       };
-      heroToggle.addEventListener('click', () => (heroVideo.paused ? heroVideo.play() : heroVideo.pause()));
+      heroToggle.addEventListener('click', () => {
+        if (!heroVideo.paused) return heroVideo.pause();
+        heroVideo.autoplay = true;
+        loadHero();
+        heroVideo.play().catch(() => {});
+      });
       heroVideo.addEventListener('play', syncToggle);
       heroVideo.addEventListener('pause', syncToggle);
-      if (reduce) heroVideo.pause();
+      if (reduce) heroVideo.autoplay = false;
+      else if (document.readyState === 'complete') loadHero();
+      else addEventListener('load', loadHero, { once: true });
       syncToggle();
 
       // Before / after: drag with the mouse or the arrow keys

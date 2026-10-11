@@ -7,6 +7,12 @@ export default defineConfig({
   site: process.env.SITE_URL ?? 'https://anclavehq.github.io',
   base: process.env.BASE_PATH ?? '/',
   trailingSlash: 'always',
+  // Stylesheets under 24 kB go inline: no render-blocking request on the landing page.
+  vite: {
+    build: {
+      assetsInlineLimit: (file, content) => (file.endsWith('.css') ? content.length < 24_000 : undefined),
+    },
+  },
   integrations: [
     starlight({
       title: 'zeste',
