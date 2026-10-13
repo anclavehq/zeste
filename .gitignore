@@ -10,3 +10,4 @@ examples/playground/dist
 *.tgz
 .env
 .env.*
+lighthouse-report*.json
