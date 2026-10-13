@@ -26,6 +26,7 @@ jobs:
       - run: pnpm --filter e2e exec playwright test --project=real-network
         env:
           ZESTE_REAL_NETWORK: '1'
+          ZESTE_HARNESS_ONLY: '1'
 
   tarteaucitron:
     runs-on: ubuntu-latest

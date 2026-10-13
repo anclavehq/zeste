@@ -3,6 +3,79 @@ import { defineConfig, devices } from '@playwright/test';
 /** One skin per framework runs the compliance guard cases: the guard lives in the engine, not in the skins. */
 const GUARD_LIBS: string[] = ['skin-bits', 'skin-react-radix', 'skin-vue-reka'];
 
+const HARNESS_SERVER = {
+  command: 'pnpm exec vite preview harness --outDir ../dist --port 4317 --strictPort',
+  url: 'http://localhost:4317/catalog.html',
+  reuseExistingServer: true,
+};
+
+const APP_SERVERS = [
+  {
+    // example app built by `pnpm build` (adapter-node)
+    command: 'node ../examples/sveltekit/build',
+    env: { PORT: '4318' },
+    url: 'http://localhost:4318/',
+    reuseExistingServer: true,
+  },
+  {
+    // example app built by `pnpm build` (next build)
+    command: 'pnpm --dir ../examples/nextjs exec next start --port 4323',
+    url: 'http://localhost:4323/',
+    reuseExistingServer: true,
+  },
+  ...[
+    ['skin-react-radix', '4326'],
+    ['skin-react-ark', '4327'],
+    ['skin-react-shadcn', '4328'],
+  ].map(([app, port]) => ({
+    command: `pnpm --dir ../examples/${app} exec next start --port ${port}`,
+    url: `http://localhost:${port}/`,
+    reuseExistingServer: true,
+  })),
+  {
+    // example app built by `pnpm build` (nuxt build)
+    command: 'node ../examples/nuxt/.output/server/index.mjs',
+    env: { PORT: '4329' },
+    url: 'http://localhost:4329/',
+    reuseExistingServer: true,
+  },
+  ...[
+    ['skin-vue-reka', '4331'],
+    ['skin-vue-ark', '4332'],
+    ['skin-vue-shadcn', '4333'],
+  ].map(([app, port]) => ({
+    command: `node ../examples/${app}/.output/server/index.mjs`,
+    env: { PORT: port },
+    url: `http://localhost:${port}/`,
+    reuseExistingServer: true,
+  })),
+  {
+    command: 'pnpm --dir ../examples/static-site exec vite preview --port 4334 --strictPort',
+    url: 'http://localhost:4334/',
+    reuseExistingServer: true,
+  },
+  ...[
+    ['svelte-spa', '4324'],
+    ['react-spa', '4325'],
+    ['vue-spa', '4330'],
+  ].map(([app, port]) => ({
+    command: `pnpm --dir ../examples/${app} exec vite preview --port ${port} --strictPort`,
+    url: `http://localhost:${port}/`,
+    reuseExistingServer: true,
+  })),
+  ...[
+    ['skin-bits', '4319'],
+    ['skin-ark', '4320'],
+    ['skin-shadcn', '4321'],
+    ['existing-site', '4322'],
+  ].map(([app, port]) => ({
+    command: `node ../examples/${app}/build`,
+    env: { PORT: port },
+    url: `http://localhost:${port}/`,
+    reuseExistingServer: true,
+  })),
+];
+
 export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,
@@ -98,75 +171,6 @@ export default defineConfig({
       use: { baseURL: 'http://localhost:4322' },
     },
   ],
-  webServer: [
-    {
-      command: 'pnpm exec vite preview harness --outDir ../dist --port 4317 --strictPort',
-      url: 'http://localhost:4317/catalog.html',
-      reuseExistingServer: true,
-    },
-    {
-      // example app built by `pnpm build` (adapter-node)
-      command: 'node ../examples/sveltekit/build',
-      env: { PORT: '4318' },
-      url: 'http://localhost:4318/',
-      reuseExistingServer: true,
-    },
-    {
-      // example app built by `pnpm build` (next build)
-      command: 'pnpm --dir ../examples/nextjs exec next start --port 4323',
-      url: 'http://localhost:4323/',
-      reuseExistingServer: true,
-    },
-    ...[
-      ['skin-react-radix', '4326'],
-      ['skin-react-ark', '4327'],
-      ['skin-react-shadcn', '4328'],
-    ].map(([app, port]) => ({
-      command: `pnpm --dir ../examples/${app} exec next start --port ${port}`,
-      url: `http://localhost:${port}/`,
-      reuseExistingServer: true,
-    })),
-    {
-      // example app built by `pnpm build` (nuxt build)
-      command: 'node ../examples/nuxt/.output/server/index.mjs',
-      env: { PORT: '4329' },
-      url: 'http://localhost:4329/',
-      reuseExistingServer: true,
-    },
-    ...[
-      ['skin-vue-reka', '4331'],
-      ['skin-vue-ark', '4332'],
-      ['skin-vue-shadcn', '4333'],
-    ].map(([app, port]) => ({
-      command: `node ../examples/${app}/.output/server/index.mjs`,
-      env: { PORT: port },
-      url: `http://localhost:${port}/`,
-      reuseExistingServer: true,
-    })),
-    {
-      command: 'pnpm --dir ../examples/static-site exec vite preview --port 4334 --strictPort',
-      url: 'http://localhost:4334/',
-      reuseExistingServer: true,
-    },
-    ...[
-      ['svelte-spa', '4324'],
-      ['react-spa', '4325'],
-      ['vue-spa', '4330'],
-    ].map(([app, port]) => ({
-      command: `pnpm --dir ../examples/${app} exec vite preview --port ${port} --strictPort`,
-      url: `http://localhost:${port}/`,
-      reuseExistingServer: true,
-    })),
-    ...[
-      ['skin-bits', '4319'],
-      ['skin-ark', '4320'],
-      ['skin-shadcn', '4321'],
-      ['existing-site', '4322'],
-    ].map(([app, port]) => ({
-      command: `node ../examples/${app}/build`,
-      env: { PORT: port },
-      url: `http://localhost:${port}/`,
-      reuseExistingServer: true,
-    })),
-  ],
+  // Only the harness is built for the harness and real-network projects (weekly job)
+  webServer: [HARNESS_SERVER, ...(process.env.ZESTE_HARNESS_ONLY ? [] : APP_SERVERS)],
 });
