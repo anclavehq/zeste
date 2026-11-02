@@ -822,8 +822,8 @@ importers:
         specifier: ^20.0.0
         version: 20.14.5
       tarteaucitronjs:
-        specifier: 1.35.1
-        version: 1.35.1
+        specifier: 1.37.0
+        version: 1.37.0
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -869,8 +869,8 @@ importers:
         specifier: ^20.0.0
         version: 20.14.5
       tarteaucitronjs:
-        specifier: 1.35.1
-        version: 1.35.1
+        specifier: 1.37.0
+        version: 1.37.0
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -7606,8 +7606,8 @@ packages:
     resolution: {integrity: sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==}
     engines: {node: '>=18'}
 
-  tarteaucitronjs@1.35.1:
-    resolution: {integrity: sha512-jl6GmoyGGpEwcVSTEyPaZ8x8wIIWyIA5yvQJHKnzFJsOVaSn1P9XT3wjdwN4zvkWuI2DZzx/SI7FxrIimLAhjw==}
+  tarteaucitronjs@1.37.0:
+    resolution: {integrity: sha512-RINdH7PLmSORavrQXx5LTmpKgYs+ZEH48/uXyskehSKThTZE8srvhG8UqNxeYgbsuBqbpnMVAkvfU+ohaW7C2A==}
 
   teex@1.0.1:
     resolution: {integrity: sha512-eYE6iEI62Ni1H8oIa7KlDU6uQBtqr4Eajni3wX7rpfXD8ysFx8z0+dri+KWEPWpBsxXfxu58x/0jvTVT1ekOSg==}
@@ -16668,7 +16668,7 @@ snapshots:
       minizlib: 3.1.0
       yallist: 5.0.0
 
-  tarteaucitronjs@1.35.1: {}
+  tarteaucitronjs@1.37.0: {}
 
   teex@1.0.1:
     dependencies:

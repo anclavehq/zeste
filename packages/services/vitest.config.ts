@@ -10,5 +10,7 @@ export default defineConfig({
         settings: { disableJavaScriptFileLoading: true, disableIframePageLoading: true, handleDisabledFileLoadingAsSuccess: false },
       },
     },
+    // Vendor loaders (Userflow) reject when their script fails to download, which is always the case here.
+    onUnhandledError: (error) => !/^Could not load /.test(error.message ?? ''),
   },
 });
