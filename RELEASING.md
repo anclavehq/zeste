@@ -6,11 +6,29 @@ Publish with **pnpm**, not npm: pnpm turns `workspace:*` into real versions and 
 
 ## Day to day
 
-A pull request that changes a published package adds a changeset:
+A pull request that changes a published package adds a changeset (CI fails without one):
 
 ```sh
-pnpm changeset   # pick the packages, patch / minor / major, one line for the changelog
+pnpm changeset          # pick the packages, patch / minor / major, one line for the changelog
+pnpm changeset --empty  # for a change that does not need a release (tests, README)
 ```
+
+The weekly workflow writes the changeset itself when it updates the catalog to a new tarteaucitron.js release.
+
+## Publishing
+
+`.github/workflows/release.yml` runs on every push to `main`. While changesets are pending, it keeps a pull request
+titled "Release" open, with the version bump and the changelogs. Merging that pull request publishes every package to
+npm with provenance and pushes the `v<version>` tag.
+
+It needs two things:
+
+- [trusted publishing](https://docs.npmjs.com/trusted-publishers) set up on npmjs.com for each package, pointing to
+  this repository and the `release.yml` workflow: no npm token is stored in GitHub;
+- the `CATALOG_UPDATE_TOKEN` secret, so that CI runs on the release pull request.
+
+If a publish fails halfway, start the workflow again from Actions → Release → Run workflow: it publishes when the
+version in `packages/core/package.json` is not on npm yet.
 
 ## Publishing by hand
 
@@ -25,9 +43,3 @@ git tag v<version> && git push --follow-tags
 
 To see what would be sent without sending anything:
 `pnpm -r --filter "./packages/*" publish --access public --dry-run --no-git-checks`.
-
-## Publishing from GitHub Actions (later)
-
-`.github/workflows/release.yml` publishes with npm provenance, and only when started by hand (Actions → Release →
-Run workflow). Before using it, set up [trusted publishing](https://docs.npmjs.com/trusted-publishers) on npmjs.com
-for each package, pointing to this repository and the `release.yml` workflow: no npm token is stored in GitHub.
